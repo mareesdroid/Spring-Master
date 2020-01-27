@@ -1,0 +1,88 @@
+What is spring autowiring?
+    For Dependency Injection, Spring can use auto wiring.
+    Spring will look for a class that matches the property
+        mathes by type: class or interface
+    Spring will inject it automatically ...hence it is called auto wired
+
+Autowiring Example
+    Injecting FortuneService into a Coach implementation
+
+    Spring will scan @Components
+
+    Any one implements FortuneService interface??
+
+    If so let's inject them. For Example: HappyFortuneService
+
+
+Autowiring Injection types
+    Constructor Injection
+    Setter Injection
+    Field Injections
+
+
+Constructor Injection:
+
+Development Process
+    Define the dependency interface and class
+    Create a constructor in your class for Injections
+    Configure the dependency injection with @Autowired Annotation
+
+Setter Injection
+    Development Process
+    1.Create Setter Method in your class for injectons
+    2.Configure the dependency injection with @Autowired Annotation
+
+Field Injection
+    Inject Dependencies by setting field values on your class directly
+        (even private fields)
+        Accomplished by using Java Reflection
+
+    We place @Autowired directly on the field 
+        instead of placing in construction or setter method we place directly on the fields
+        when object created field injection set your autowired field  behind the scenes by use of java technology called reflection
+    Development Process
+    1.Configure the dependency injection with @Autowired Annotation
+        Applied directly to the field
+        No need for setter methods
+
+Bean qualifier 
+    Imagine if you are implementing multiple beans then 
+    qualifier tells spring to which bean to autowired
+
+    ex:
+@Component
+public class HockeyCoach {
+	@Autowired
+    @Qualifier("happyFortuneService")           ///specifying the bean id of the Component
+	private FortuneService fortune;
+
+	public String getMyFortune() {
+		return fortune.getFortune();
+	}
+
+}
+
+
+
+
+qualifier Example
+                       ______________________________________________________________________________________
+                      |                                                                                      |
+    Imagine 4 classes |HappyFortuneServices, RandomFortuneService, DatabaseFortuneService, RestFortuneSevice |
+                      |______________________________________________________________________________________|
+
+                                                            |
+                                                            |
+                                                            |
+                                                            |
+                                                            |
+                                                         \  |   /
+                                                          \ |  /
+                                                           \ /
+
+                                        ________________________________________________
+                                        |                                               |
+                                        |               FortuneService                  |       (interface)
+                                        |_______________________________________________|
+
+                            

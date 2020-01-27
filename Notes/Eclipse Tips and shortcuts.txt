@@ -1,0 +1,33 @@
+in android studio alt enter here eclipse use ctrl+1 / mac start+1
+
+tips 2
+eclipse preference general-> java -> editor ->save action
+    this action(line indent, organise import, add annotaion automaticaly) on ctrl+s /start+s
+
+Shortcuts
+    Select code press alt + up/down to move code
+
+    ctrl + shift + r fastly move to classes
+
+    ctrl+d delete current line
+
+    ctrl+q last edit
+
+    alt + shift + x quick run
+
+    ctrl+shift+l complete list of shorcut
+
+    ctrl + =  zoom in   ztrl + -  zoom out
+
+    start + ctrl + f full screen
+
+    ctrl + alt + b skip all breakpoint
+
+    start + shift + b toggle break point
+
+    start + shift + f11 run project 
+
+
+
+ctrl + space
+    ex sysout ctrl+space completes System.out.println();

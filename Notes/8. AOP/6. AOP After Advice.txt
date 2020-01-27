@@ -1,0 +1,275 @@
+After Returning
+
+
+ ______________________           ______________________             ______________________             ______________________             ______________________
+|                      |         |                      |           |                      |           |                      |           |                      |
+|                      |         |                      |           |                      |           |                      |           |   Targetobject       |
+|   Main object        |<------->|     AOP Proxy        |<----------|----Logging-----------|-----------|------Security--------|---------->|       doSomeWork(){  |
+|       dosomeWork();  |         |                      |           |       Aspect         |           |        Aspect        |           |       ......       } |
+|______________________|         |______________________|           |______________________|           |______________________|           |______________________|
+
+
+From aboive fig:
+    After Advice
+            flow:
+            AOP Methods(logging aspect, security aspect) Called after TargetObject's method finish/return(dosomeWork())
+            usage:
+            Most Common
+                logging, security, transactions
+            Audit logging
+                who, what, when, where
+            Post-processing data
+                Post process the data before returnig to the caller
+                Format the data or enrich the data 
+
+Development Process @AfterReturning:
+    1.Add Constructors to Account class
+    2.add findaccounts() in AccountDAO
+    3.Call the new method findAcounts() in mainApp;
+    4.Add @AterReturning advice in aspect
+
+
+Account.class:
+    package com.mars.aop;
+
+public class Account {
+	private String name;
+	private String level;
+	
+	public Account() {
+		
+	}
+	
+	
+	
+	public Account(String name, String level) {
+		this.name = name;
+		this.level = level;
+	}
+
+
+
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getLevel() {
+		return level;
+	}
+	public void setLevel(String level) {
+		this.level = level;
+	}
+
+
+
+	@Override
+	public String toString() {
+		return "Account [name=" + name + ", level=" + level + "]";
+	}
+	
+	
+}
+
+
+
+AccountDAO:
+
+    package com.mars.aop.dao;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.stereotype.Component;
+
+import com.mars.aop.Account;
+
+@Component
+public class AccountDAO {
+	
+	private String name, serviceCode;
+	
+	
+	// add a new method: findAccounts()
+	
+	public List<Account> findAccounts(){
+		List<Account> myAccounts = new ArrayList<>();
+		
+		//Create Sample Accounts
+		Account tempAccount1 = new Account("Marees","Platinum");
+		Account tempAccount2 = new Account("Yuvaraj", "Diamond");
+		Account tempAccount3 = new Account("Elavarasan", "Gold");
+		
+		// add them to our account list
+		
+		myAccounts.add(tempAccount1);
+		myAccounts.add(tempAccount2);
+		myAccounts.add(tempAccount3);
+		return myAccounts;
+	}
+	public void test() {
+		
+	}
+	
+	public void addAccount(Account theAccount, boolean isVIP) {
+		System.out.println(getClass() + ": DOING MY DB WORK: ADDING AN ACCOUNT");
+	}
+	
+	public void doingWork() {
+		System.out.println(getClass() + " DOING STUFF: Kinda busy! catch u later!");
+	}
+
+	public String getName() {
+		System.out.println(getClass() + ": Getting Name");
+		return name;
+	}
+
+	public void setName(String name) {
+		System.out.println(getClass() + ": Setting Name");
+		this.name = name;
+	}
+
+	public String getServiceCode() {
+		System.out.println(getClass() + ": Getting Servicecode");
+		return serviceCode;
+	}
+
+	public void setServiceCode(String serviceCode) {
+		System.out.println(getClass() + ": Setting Servicecode");
+		this.serviceCode = serviceCode;
+	}
+	
+	
+}
+
+
+Aspect(Log class):
+package com.mars.aop.aspect;
+
+import java.util.List;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import com.mars.aop.Account;
+
+@Aspect
+@Component
+@Order(2)
+public class MyDemoLoggingAspect {	
+		
+	//// returning and parameter name should match
+	@AfterReturning(pointcut = "execution(* com.mars.aop.dao.AccountDAO.findAccounts(..))",
+					returning = "result"
+			)
+	public void afterReturningFindAccountsAdvice(JoinPoint theJoin, List<Account> result) {
+		//display the method name/ printout which method we are advicing on
+		String method =theJoin.getSignature().toShortString();	//this will return the method name
+		
+		System.out.println("Method Name: " + method);
+		System.out.println("Result: " + result);
+		
+		// post-processing the data / modify the data
+		
+		// convert the account names to uppercase
+		convertAccountNamesToUpperCase(result);
+	
+		System.out.println("Prcoessed/Modified Result: " + result);
+	}
+	
+	private void convertAccountNamesToUpperCase(List<Account> result) {
+		// Loop through accounts
+		
+		for(Account curAccount : result) {
+		
+			// get uppercase version of anme
+			String theUpperCase = curAccount.getName().toUpperCase();
+			
+			// update the name on the account
+			curAccount.setName(theUpperCase);
+		}
+	}
+
+	@Before("com.mars.aop.aspect.marsAopExpression.daoPackageNoGetterSetter()")
+	public void beforeAddingAnyAdvice(JoinPoint theJoinPoint) {
+		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+		
+		//display the method name
+		MethodSignature mySignature = (MethodSignature) theJoinPoint.getSignature();
+		System.out.println("Method: " + mySignature);
+		
+		
+		//display mthod arguments
+		
+		// get arguments
+		Object[] args = theJoinPoint.getArgs();
+		
+		// loop through arguments
+		for(Object currentArg : args) {
+			System.out.println(currentArg);
+			if (currentArg instanceof Account) {
+				// downcast and print Account specific stuff
+				Account theAccount = (Account) currentArg;
+				System.out.println("Account holder name: " + theAccount.getName());
+				System.out.println("Account holder level: " + theAccount.getLevel());
+			}
+		}
+		
+	}
+	
+	
+}
+
+
+
+Main app:
+package com.mars.aop;
+
+import java.util.List;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.mars.aop.dao.AccountDAO;
+import com.mars.aop.dao.MembershipDAO;
+
+
+public class AfterReturningDemoApp {
+
+	public static void main(String[] args) {
+		
+		
+		// read spring  config java class
+		AnnotationConfigApplicationContext context = 
+							new AnnotationConfigApplicationContext(DemoConfig.class);
+		
+		//get the bean from spring container
+		
+		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);		///default bean name is class name if u want to change change it in @Component(name = "helloBean")
+
+		// get accounts
+		List<Account> myAcoounts = theAccountDAO.findAccounts();
+		//theAccountDAO.test();
+		
+	//	theAccountDAO.doingWork();
+		// print the accounts
+		
+		System.out.println(myAcoounts);
+		
+		
+		
+		
+		//close the context
+		context.close();
+
+	}
+
+}
+
+

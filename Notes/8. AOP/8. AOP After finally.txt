@@ -1,0 +1,31 @@
+After Throwing
+
+
+ ______________________           ______________________             ______________________             ______________________             ______________________
+|                      |         |                      |           |                      |           |                      |           |                      |
+|                      |         |                      |           |                      |           |                      |           |   Targetobject       |
+|   Main object        |<------->|     AOP Proxy        |<----------|----Logging-----------|-----------|------Security--------|---------->|       doSomeWork(){  |
+|       dosomeWork();  |         |                      |           |       Aspect         |           |        Aspect        |           |       ......       } |
+|______________________|         |______________________|           |______________________|           |______________________|           |______________________|
+
+
+From aboive fig:
+    After Throwing
+            flow:
+            AOP Methods(logging aspect, security aspect) Called after TargetObject's method success or error
+
+
+
+The @After advice does not have access to the exception 
+    if u need exception, the use @AfterThrowing advice
+
+The @After advice should be able to run in the case of success or error
+
+
+
+Development Process:
+    1.Add @After advice
+    2.Test for failure/exception case 
+    3.Test for success case 
+
+

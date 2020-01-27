@@ -1,0 +1,39 @@
+AOP Around Advice
+    runs before and after the method
+
+
+ ______________________           ______________________             ______________________             ______________________             ______________________
+|                      |         |                      |           |                      |           |                      |           |                      |
+|                      |         |                      |           |                      |           |                      |           |   Targetobject       |
+|   Main object        |<------->|     AOP Proxy        |<----------|----Logging-----------|-----------|------Security--------|---------->|       doSomeWork(){  |
+|       dosomeWork();  |         |                      |           |       Aspect         |           |        Aspect        |           |       ......       } |
+|______________________|         |______________________|           |______________________|           |______________________|           |______________________|
+
+
+From aboive fig:
+    After Throwing
+            flow:
+            AOP Methods(logging aspect, security aspect) Called before and after TargetObject's method
+            usage:
+            Most Common
+                logging, security, auditing
+            Audit logging
+                who, what, when, where
+            Pre-processing and Post-processing data
+                Post process the data before returnig to the caller
+                Format the data or enrich the data 
+            Profiling code
+                ex:
+                    How long does it take for a section of code to run?
+            Managing exceptions
+                Swallow/handle/stop exceptions
+
+
+
+
+Interaction 
+    like u can use it like a method 
+        u can pass the data (before)
+        and get the result (after)
+    
+    It's more like a @before and @after combined

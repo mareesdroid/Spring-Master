@@ -1,0 +1,28 @@
+What are Java Annotaions:
+    Special labels/ marekers added to Java Classes
+    Provide meta-data about the Classes
+    Processed at compile time or run-time for special processing 
+
+
+Annotation are meta-data about the Class
+
+annotaion example:
+    Imagine if you are overriding some method
+    and you put annotation label for that overriding method 
+    on compile time compiler check this method really override in this class as advertised in annotations
+    if not it will not compile and hrow the error
+
+Why Spring configuration with annotations : 
+    Annotaton minimize the xml configuration
+
+
+Spring scanning for component classes for special annotaion
+Automaticallt register the beans in spring container(which have annotation)
+
+
+
+Development Process
+    1.Enable component scanneing in spring config file
+    2.Add the @Component Annotation to your Java classes
+    3.Retrieve bean from spring container
+    

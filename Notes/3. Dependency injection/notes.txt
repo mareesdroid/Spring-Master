@@ -1,0 +1,224 @@
+ Dependency injection (Simply Inject Object's dependencies)
+    The client delegates to calls to another object the responsibility of providing its dependencies
+
+
+for example i'm going to buy a car
+
+ _________________          Give me a Car            _________________
+|   client        | ---------------------------->   |   Car Factory   |
+|_________________| <---------------------------    |_________________|
+                    Car (completely builded)                |      /|\
+                                                            |     / | \
+                                                            |    /  |  \
+                                                            |       |
+                                                            |       |
+                                                            |       |
+                                                         \  |  /    |
+                                                          \ | /     |
+                                                           \|/      |
+
+                                                      __________________________
+                                                     |      Engine              |
+                                                     |      Exhaust             |
+                                                     |      Fuel Tank           |
+                                                     |      dashboard gadgets   |
+                                                     |      Wheels              |
+                                                     |      steering            |
+                                                     |      Seats...            |
+                                                     |__________________________|
+
+
+    1.you ask a car factor for a car
+    2.at the factory they have all parts like engine Exhaust chasis, wheels .... 
+    3.technician/mechanic assemble all the parts and deliver you finally build car
+    /*
+    *   You dont have to build a car. car is already built for u at car factory they inject all the dependency(parts) for the car.
+    *   like they inject the engine,exhaust
+    *   that is a dependency injection u simply outsource the construction and injection of ypur object to an external entity in this case that's the car factory
+    */
+
+
+
+
+Example on our current 
+    comitte asks for hockey coach, crciket coach..... daily workouts
+
+    our all coaches already provides daily workouts
+
+    Now they will also provide daily fortunes
+        New Helper: FortuneService  (dependency = helper)
+            now Coach will depend on FortuneSevice This is a Dependency
+
+Injecting Types
+    Two most common are
+        Constructor Injection       (set dependency through constructor)
+        Setter Injection            (set dependencies through setter method)
+
+
+Constructor Injection  (Development Process)
+    1.Define the dependency interface and class
+    2.Create a constructor in your class for injections
+    3.Configure the dependency injection in Spring config file
+
+
+Constructor injection
+
+1.Define the dependency interface and class
+    interface:
+
+public interface FortuneServices {
+
+	public String getFortune();
+}
+
+class:
+public class HappyFortuneService implements FortuneServices {
+
+	@Override
+	public String getFortune() {
+
+		return "Today is your lucky day!";
+	}
+
+}
+
+
+2.Create a constructor in your class for injections
+
+public class TrackCoach implements Coach {
+
+	private FortuneServices fortune;
+	
+	
+	public TrackCoach(FortuneServices fortune) {
+		this.fortune = fortune;
+	}
+
+	@Override
+	public String getDailyWorkout() {
+		// TODO Auto-generated method stub
+		return "go for a super 5k run";
+	}
+
+	@Override
+	public String getDailyFortune() {
+		// TODO Auto-generated method stub
+		return "Just Do it : " + fortune.getFortune();
+	}
+
+}
+
+
+ 3.Configure the dependency injection in Spring config file
+
+    <bean id="myCoach" 
+    class = "com.mars.spring.TrackCoach">
+    
+    <!-- setup my constructor injection -->
+    <constructor-arg ref="myFortune" />
+    
+     </bean>
+     <!-- myDependencies -->
+   <bean id = "myFortune" class = "com.mars.spring.HappyFortuneService" />
+
+
+Setter Injection
+
+    Development Process
+    1.Create setter methods in your class for injections
+    2.Configure the dependency injection in spring config file
+
+
+1.Create setter methods in your class for injections
+    CricketCoach.java
+
+    public class CricketCoach implements Coach {
+
+	private FortuneServices fortune;
+
+	public CricketCoach() {
+		System.out.println("Inside Cricket Coach");
+	}
+
+	// setter method
+	public void setFortuneService(FortuneServices fortune) {
+		System.out.println("Inside Setter Method");
+		this.fortune = fortune;
+	}
+
+	@Override
+	public String getDailyWorkout() {
+		// TODO Auto-generated method stub
+		return "Practise bowling for 15mts";
+	}
+
+	@Override
+	public String getDailyFortune() {
+		// TODO Auto-generated method stub
+		return fortune.getFortune();
+	}
+
+}
+
+  2.Configure the dependency injection in spring config file
+ <!-- myDependencies -->
+   <bean id = "myFortune" class = "com.mars.spring.HappyFortuneService" />
+   
+   
+   <bean id = "myCricketCoach" class = "com.mars.spring.CricketCoach">
+   
+<!--setup setter Injection -->
+
+<property name = "fortuneService" ref = "myFortune" />
+
+   </bean>
+
+
+
+
+
+Inject literal values into our spring objects
+
+//CricketCoach.java
+// add two string literal in our class
+    private String mail;
+	private String team;
+
+//then setter method    
+    
+    public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public void setTeam(String team) {
+		this.team = team;
+	}
+
+//config file
+<!-- myDependencies -->
+   <bean id = "myFortune" class = "com.mars.spring.HappyFortuneService" />
+   
+   
+   <bean id = "myCricketCoach" class = "com.mars.spring.CricketCoach">
+   
+<!--setup setter Injection -->
+
+<property name = "fortuneService" ref = "myFortune" />
+
+<!--Inject literal values -->
+<property name = "mail" value= "M_Csk_Coach@ipl.com" />
+<property name = "team" value= "Chennai Super Kings" />
+
+   </bean>
+
+
+
+
+
+
+Injecting values from properties file
+
+1.Create Properties file
+2.Load properties file in spring config file
+3.Reference value from property file
+

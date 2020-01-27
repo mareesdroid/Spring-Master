@@ -1,0 +1,25 @@
+
+Spring MVC Interview Questions with Answers
+https://howtodoinjava.com/interview-questions/spring-mvc-interview-questions-with-answers/
+
+Spring AOP Interview Questions and Answers
+https://www.dineshonjava.com/spring-aop-interview-questions-and-answers/
+
+Spring REST Web Services Interview Questions and Answers
+https://www.dineshonjava.com/spring-rest-web-services-interview-questions-and-answers/
+
+Spring Boot Interview Questions
+https://www.journaldev.com/8611/spring-boot-interview-questions
+
+Hibernate Interview Questions and Answers
+https://www.journaldev.com/3633/hibernate-interview-questions-and-answers?utm_source=website&utm_medium=menubar&utm_campaign=Top-Menu-Bar
+
+
+300 Core Java Interview Questions 
+https://www.javatpoint.com/corejava-interview-questions
+
+JSP Interview Questions
+https://www.javatpoint.com/jspinterview
+
+JDBC Interview Questions
+https://www.javatpoint.com/jdbc-interview-questions

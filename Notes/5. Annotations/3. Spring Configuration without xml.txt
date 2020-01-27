@@ -1,0 +1,12 @@
+Development Process
+1.Create a Java class and annotate as @Configuration
+2.Add Component Scanning support: @ComponentScan(optional)
+3.Read Spring Java Configuration file
+4.Retrieve bean from spring container
+
+
+
+Injecting Values from property file
+1.Create Properties file
+2.load property file in spring Config
+3.reference Values from Properties file

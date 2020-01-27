@@ -1,0 +1,325 @@
+To create spring project
+
+    https://start.spring.io/
+
+
+import project in ur ide
+
+
+
+spring boot project structure
+
+    pom.xml --> maven dependency
+    mvnw/mvnw.cmd --> maven wrapper (if u already have maven ignore/delete this)
+    src/main/resources --> properties/imgs/other resouces       properties->default empty at start u can add properties like(server.port = 8085)
+    src/main/resources/static   --> static resources like html files, CSS, Javascript, imges....
+    src/main/webapp --> ur jsp's
+    src/test/java/....   --> unit tests(u can add ur unit test in this directory)
+    src/main/java/....   --> BootApplication.java(boot app root of all package )
+                                ex: BootApp.java (com.mars.boot)
+                                    MyRest (com.mars.boot.rest)
+                                    myController (com.mars.boot.controller)                                    
+                                    myEntity(com.mars.boot.entity)
+
+
+    if u want to add explicitly list other packages to scan then use this
+            @SpringBootApplication(
+                scanBasePackages={
+                    "com.mars.util",
+                    "com.mars.singleton"
+                }
+            )
+            public class BootApp{
+                ...
+                ...
+            } 
+
+
+
+
+
+// dev toool package:
+
+    Supports automatic reloading 
+
+                    
+<!--                Add Support for auto reloading(dev tools)-->
+                <dependency>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-devtools</artifactId> 
+                </dependency>
+
+
+
+
+Spring Boot Actuator:
+
+        see online 
+            it adds info/health and some other mappings automatically for ur web app
+
+
+Injecting custom application properties:
+        1. Define custom properties in application.properties
+        2. Inject properties into Spring Boot application using @Value
+
+Configuring the spring boot server:
+    1.Configure the server port 
+    2.Configure the application context path
+
+
+REST CRUD api:
+    Create a REST API for the Employee directory
+
+REST clients should be able to
+    Get a list of employees
+    Get a single employee by id 
+    Add a new employee 
+    Update an employee
+    Delete an employee
+
+
+Development Process:
+    1. Setup Database Dev Environment
+    2. Create Spring Boot project using Spring Initializr
+    3. Get list of employees
+    4. Get single employee by ID 
+    5. Add a new employee
+    6. Update an existing employee
+    7. Delete an existing employee
+
+
+    application architecture:
+        restController <------> employee service <-------> Employee DAO <------> DATABASE
+
+
+
+JPA:
+    Java Persistence API
+        -standard api for Object-to-Relatonal-Mspping(ORM)
+    Only a specification
+        Defines a set of interfaces
+        Requies an implementation to be usable
+
+
+Standard JPA API:
+    The JPA API methods are similar to Native hibernate API
+    JPA also supports a query language: JPQL (JPA Query language)
+
+
+
+Comparition between Native hibernae methods and JPA methods
+                                                hibernate:                      JPA:
+        create/ save new entity                 session.save()                  entityManager.persist()
+        retrieve entity by id                   session.get()/load()            entityManager.find()
+        retrieve list of entieties              session.createQuery             entityManager.createQuery()
+        save or update entity                   session.saveOrUpdate()          entityManager.merge()
+        delete entity                           session.delete()                entityManager.remove()
+
+
+
+
+
+Spring data JPA
+Use case:
+    Imagine we already created DAO and Entity for employee
+    if u want to create(as same as employee same CRUD) for student, teacher, workers, product.......
+    and most of the code will be a same
+    that will be a lot of DAO and entieties
+    for that propble we can use Data JPA
+we could tell spring that
+    Create a DAO for me 
+    Plug in my entity type and primary key
+    Give me all of the basic CRUD features for free
+    ex:
+    if i want to get data from employee
+        i can pass the employee(entity type) and employeeid(primary key) spring will automatically generate DAO and Entity for us
+
+Spring data JPA:
+    Create a DAO and just plugin ur entity type and primary key
+    Spring will give u a CRUD Implementation automatically
+    Helps to minimize the boiler-plate DAO code
+    we can get more reduction in code
+
+  application architecture:
+        restController <------> employee service <-------> Employee Repository(spring data JPA) <------> DATABASE
+    we don't need the dao and entity 
+
+Development Process:
+    1.Extend JpaRepository interface
+    2.Use your repository in ur app
+
+Spring data REST:
+    spring data REST will automatically create REST API(post, get, put delte)
+    based on the entity and the jap repository
+
+for spring data REST u will need 3 items
+    1.Your entity
+    2.JpaRepository (exampleRepository extends JpaRepository<aaaas,asda>)
+    3.Maven POM dependency for: spring-boot-starter-data-rest
+
+application architecture:
+        Spring Data REST(/employees automatically created endpoints)  <-------> Employee Repository(spring data JPA) <------> DATABASE
+
+    we don't need the rest controller and service 
+
+
+
+HATEOAS:
+Hypermedia as the Engine of Application State (HATEOAS) is a component of the REST application architecture that distinguishes it from other network application architectures.
+
+    Hypermedia-driven sites provide information to access REST interfaces
+        - think of it as meta-data (data about the data) ex: we get response from server and we get meta data about that data  see ex 2:
+    HATEOAS uses Hypertext Application Language (HAL) data format
+Spring Data REST response using HATEOAS
+for example REST response fromL GET /employee/3
+1.{
+    "firstName" : "Marees",
+    "lastName" : "A",
+    "email" : "mareesdroid@gmail.com",
+    "_links" : {
+        "self" : {
+            "href": "http://localhost:8080/employee/3"
+        },
+        "employee" : {
+            "href": "http://localhost:8080/employee/3"
+        }
+    }
+}
+2.{
+   "_embedded" : {
+    "employees" : [  {
+      "firstName" : "Avani",
+      "lastame" : "Gupta",
+      "email" : "avani@luv2code.com",
+      "_links" : {
+        "self" : {
+          "href" : "http://localhost:8080/magic-api/mebers/3"
+        },
+        "employee" : {
+          "href" : "http://localhost:8080/magic-api/mebers/3"
+        }
+      }
+    }, {
+      "firstName" : "Yuri",
+      "lastame" : "Petrov",
+      "email" : "yuri@luv2code.com",
+      "_links" : {
+        "self" : {
+          "href" : "http://localhost:8080/magic-api/mebers/4"
+        },
+        "employee" : {
+          "href" : "http://localhost:8080/magic-api/mebers/4"
+        }
+      }
+    } ]
+  },                                ////// these are the meta data (data about the response(next,first,last page,page -> size currentPage))
+  "_links" : {
+    "first" : {
+      "href" : "http://localhost:8080/magic-api/mebers?page=0&size=3"
+    },
+    "self" : {
+      "href" : "http://localhost:8080/magic-api/mebers{?page,size,sort}",
+      "templated" : true
+    },
+    "next" : {
+      "href" : "http://localhost:8080/magic-api/mebers?page=1&size=3"
+    },
+    "last" : {
+      "href" : "http://localhost:8080/magic-api/mebers?page=1&size=3"
+    },
+    "profile" : {
+      "href" : "http://localhost:8080/magic-api/profile/mebers"
+    }
+  },
+  "page" : {
+    "size" : 2,
+    "totalElements" : 6,
+    "totalPages" : 2,
+    "number" : 0
+  } 
+}
+
+
+Advanced features:
+    Spring Data REST advanced features
+        - Pagination, sorting and searching
+        - Extending and adding custom queries with JPQL
+        - Query Domain Specific Language (Query DSL)
+
+to make more action in endpoints and method(/employee & POST) modify application.properties:
+
+
+REST Endpoints
+    By default, Spring Data REST will create endpoins based on entity type
+    Simple pluralized forma
+        First character of Entity type is lowercase
+        Then just adds an "s" to the entitty ex: if Entity Employee   ->   endpoint employees
+
+
+sorting data's:
+    append the ?sort=firstName/lasname...
+    ex:
+        http://localhost:8080/magic-api/mebers?sort=firstName
+
+    ascending:(default is ascending)
+            http://localhost:8080/magic-api/mebers?sort=firstName
+    descending:
+            http://localhost:8080/magic-api/mebers?sort=firstName,desc
+
+Pagination:
+    add in application.properties
+        spring.data.rest.default-page-size=3
+to change base path/contxt path:
+    spring.data.rest.base-path=/magic-api
+change custom endpoint name add in to ur repostiory
+    @RepositoryRestResource(path="mebers")
+    public interface EmployeeRepository extends JpaRepository<Employee, Integer>{
+        .....
+        .....
+    }
+
+
+Thymeleaf(pronounce: timeleaf)
+    can be an HTML page with some Thymeleaf expressions
+    include dynamic content from Thymeleaf expressions
+
+    /// it can access spring, java, objects code inside a html
+
+
+sample code
+    html: 
+    place it in main/resources/template
+    <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>supply a title</title>
+        <!-- reference css file -->
+        <link rel="stylesheet"
+              th:href="@{/css/my-style.css}" />
+    </head>
+    <body>
+        <p th:text="'Time on server is ' + ${myDate}" class="test"/>
+    </body>
+</html>
+
+css: 
+place it in main/resorce/static/css
+
+
+java controller:
+/**
+ *
+ * @author mars
+ */
+@Controller
+public class DemoController {
+    // create a mapping for "/hello"
+    @GetMapping("/hello")
+    public String sayHello(Model myModel){
+        
+        myModel.addAttribute("myDate", new java.util.Date());
+                ///// it will automatically go and look for helloworld.html in src/main/resources/templates
+        return "helloworld";
+        
+    }
+}

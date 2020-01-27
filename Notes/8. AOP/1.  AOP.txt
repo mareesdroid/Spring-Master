@@ -1,0 +1,284 @@
+AOP
+Aspect-Oriented-Programming
+
+
+our previous project application architecture was
+
+
+Architecture of the project for getting customer List
+_________________               _________________               _____________________               _____________________                   _____________________
+|               |     1         |                |       2      |                   |      3        |                    |       4          |                   |
+|               | ---------->   |    customer    |  ----------> |   Customer        |  ---------->  |       Customer     |  ---------->     |       db          |
+|               |               |    Controller  |              |   Service         |               |         DAO        |                  |                   |
+|               |               |________________|   <----------|___________________|  <----------  |____________________|   <----------    |___________________|
+|               |                       |                 7                                    6                                  5
+|               |                       |8
+| browser       |                       |
+|               |                    \  |  /
+|               |                      \|/
+|               |               _____________________
+|               |  <----------  |       JSP         |
+|               |      9        |___________________|
+|_______________|
+
+
+
+
+
+
+We'll apply alp for this project
+
+
+ex 
+    our boss come and tell u that
+        hey we need add Logging to our DAO methods :O
+        then again he tells
+            we need to add security code to our DAO
+            make sure user is authorized bedore running dao methods
+
+
+
+Why AOP?
+
+    Aspect encapsulating cross-cutting logic
+
+    we use AOP for Cross-Cutting concerns(logic/functionality)
+
+
+Architecture for our AOP Cross-Cutting concerns
+
+        |   |   |   |       _____________________       |   |   |   |       _____________________       |   |   |   |       _____________________
+        |   |   |   |       |                   |       |   |   |   |       |                    |      |   |   |   |       |                    |
+<-------|   |---|   |------>|   Account         |<------|   |---|   |------>|   Account          |<-----|   |---|   |------>|   Account          |
+        |   |   |   |       |   Controller      |       | L |   | S |       |   Service          |      |   |   |   |       |   DAO              |
+        | L |   | S |       |___________________|       |   |   |   |       |____________________|      | L |   | S |       |____________________|
+        |   |   |   |                                   |   |   | E |                                   |   |   |   |   
+        |   |   |   |                                   | O |   |   |                                   |   |   | E |   
+        | O |   |   |                                   |   |   |   |                                   | O |   |   |
+        |   |   | E |                                   |   |   | C |                                   |   |   |   |
+        |   |   |   |       _____________________       | G |   |   |        _____________________      |   |   | C |        _____________________
+        | G |   |   |       |                   |       |   |   |   |        |                   |      |   |   |   |        |                    |
+<-------|   |---| C |------>|   Product         |<------| G |---|   |------->|   Product         |<-----| G |---|   |------->|   Product          |
+        |   |   |   |       |   Controller      |       |   |   | U |        |   Service         |      |   |   | U |        |   DAO              |
+        | G |   | U |       |___________________|       |   |   |   |        |___________________|      |   |   |   |        |____________________|
+        |   |   |   |                                   | I |   |   |                                   |   |   |   |
+        |   |   |   |                                   |   |   | R |                                   | G |   | R |
+        |   |   | R |                                   |   |   |   |                                   |   |   |   |
+        | I |   |   |                                   |   |   |   |                                   |   |   |   |
+        |   |   |   |       _____________________       | N |   | I |        _____________________      | I |   | I |        _____________________
+        |   |   | I |       |                   |       |   |   |   |        |                   |      |   |   |   |        |                    |
+<-------| N |---|   |------>|   blog            |<------|   |---|   |------->|   blog            |<-----|   |---|   |------->|   blog             |
+        |   |   |   |       |   Controller      |       |   |   |   |        |   Service         |      | N |   | T |        |   DAO              |
+        |   |   | T |       |___________________|       |   |   | T |        |___________________|      |   |   |   |        |____________________|
+        |   |   |   |                                   | G |   |   |                                   |   |   |   |
+        | G |   |   |                                   |   |   |   |                                   |   |   | Y |
+        |   |   | Y |                                   |   |   | Y |                                   | G |   |   |
+        |   |   |   |                                   |   |   |   |                                   |   |   |   |
+        |   |   |   |                                   |   |   |   |                                   |   |   |   |
+
+
+
+Aspects:
+
+    Aspects can be reused at multiple location
+    Same aspect/class ... applied based on configuration
+
+
+
+AOP Solution:
+
+    Imagine you and ur friend making a call
+        on the front end you make a call and speak to ur friend
+
+
+        But behind the scenes your call is monitored(Logged) and others is listening on that line
+            Logging team listen ur call
+            Security team listen to ur call
+
+
+            Me  ----------------------------------->    frnd 
+                            |
+                            |-> monitor call
+                __________________________________________
+                |               |                         |
+            Logger           Security                   Other spies
+
+
+
+Like that 
+
+    when u write a java code from main app to do some work in other class
+
+    behind the scenes logger and security monitor all the logs
+
+Benefits of AOP
+    Code for Aspect is defined in a single class
+        - Much better than being scattered everywhere
+        - Promotes code reuse and easier to change
+
+    Business code in your application is cleaner
+        - Only Applies to business functionality
+        - Reduces Code Complexity
+    
+    Configurable 
+        - Based on configuration, appy Aspects selectively to different parts of app
+        - No need to make changes to main application code ....
+
+
+
+AOP Use cases
+    Most common in
+        - Logging
+        - Security
+        - Transaction
+
+    Audit Logging
+        - Who 
+        - when
+        - what
+        - where
+
+    Exception handling
+        - log exception and notify DevOps team via sms/mail
+
+    API Management
+        - how many times has a method been called user
+        - analytics: what are peak times?   who is top user?    what is average load?
+
+
+
+AOP Advantages: 
+    Reusable modules
+    Resolve code tangling
+    Resolve code scatter
+    Applied selectively based on configuration
+
+Disadvantages:
+    Too many aspects and app flow is hard to follow
+    Minor performance cost for aspect execution.(run-time weaving(connecting))
+
+
+AOP Terminology
+
+    Aspect:
+        Module of code for a cross-cutting concern(logging, security, ...)
+    Advice:
+        What action is taken and when it should be applied
+    Join Point:
+        When to apply code during program execution
+    Pointcut:
+        A predicate expression for where advice should be applied 
+
+Advice types
+    (i)   Before advice:              run before the method
+    (ii)  After finally advice:       run after the method(finally)
+    (iii) After returning advice:     run after the method(success execution)
+    (iv)  After throwing advice:      run after the method(if exception thrown)
+    (v)   Around advice:              run before and after method 
+Weaving:
+    - Connecting aspects to target objects to create an advised object
+    - Different types of weaving
+        Compile-time, load-time, run-time
+    - Regarding performance: run-time weaving is the slowest 
+
+
+Two leading AOP Frameworks for java:
+    - Spring AOP
+    - AspectJ
+
+
+Spring AOP Support
+    Spring provides AOP Support
+    Key Component of spring 
+        security, transaction, caching, ...
+    Uses run-time weaving of aspects
+
+
+
+Spring AOP Comparision with AspectJ:
+    Advantages:
+        Simpler to use than AspectJ
+        Uses Proxy pattern 
+        Can migrate to AspectJ when using @Aspect annotation 
+    Disadvantages:
+        Only supports method level join points
+        Can only apply aspects to beans created by spring app context
+        Minor performance cost for aspect-execution(run-time weaving)
+
+
+First learn SpringAOP
+    if u mastered then learn AspectJ
+        AspectJ is faster performance compare to SpringAOP
+        Support all join points
+        Works with any POJO
+        Complete AOP Support
+    AspectJ is complex than first lean SpringAOP then learn this
+
+
+
+Our Spring AOP Learning AOP Roadmap:
+
+    1.Create Aspects
+    2.Develop Advices
+        Before, After returning, After throwing
+        After finally, Around 
+    3.Create Pointcut expression
+    4.Apply it to our big CRM Project (previous crm project Spring MVC + hibernate)
+
+
+    https://open.spotify.com/playlist/37i9dQZF1DX6pHwbENJhLq
+    https://open.spotify.com/playlist/37i9dQZF1DX2x1COalpsUi
+    https://open.spotify.com/playlist/37i9dQZF1DX3w2Hr9f5Urj
+    https://open.spotify.com/playlist/37i9dQZF1DX6iE1ifxAOfo
+    https://open.spotify.com/playlist/37i9dQZF1DX4UE2DqdZFBH
+    https://open.spotify.com/playlist/37i9dQZF1DX1VHgGvdVgaZ
+    https://open.spotify.com/playlist/37i9dQZF1DX1VHgGvdVgaZ
+    https://open.spotify.com/playlist/37i9dQZF1DXaVlt2dxO1OI
+    https://open.spotify.com/playlist/37i9dQZF1DX4tCh1BbG63z
+    https://open.spotify.com/playlist/37i9dQZF1DWVIeFpvRcEQh
+    https://open.spotify.com/playlist/37i9dQZF1DWSw34ykYPoaf
+
+    https://open.spotify.com/playlist/37i9dQZF1DWSw34ykYPoaf
+    https://open.spotify.com/playlist/37i9dQZF1DX0nA91dV2ts4
+    https://open.spotify.com/playlist/37i9dQZF1DX0ZNoUFyfZDY
+
+
+why we need aop 
+    Imagine u developed a app
+_________________               _____________________               _____________________                   _____________________
+|                |       2      |                   |      3        |                    |       4          |                   |
+|                |  ----------> |                   |  ---------->  |                    |  ---------->     |       db          |
+|    Controller  |              |   Service         |               |         DAO        |                  |                   |
+|________________|   <----------|___________________|  <----------  |____________________|   <----------    |___________________|
+                         7                                    6                                  5
+       
+imagine project structure :           
+    Customer Controller
+            - giveCoupons()            -> service      -> DAO
+            - getCustomers()           -> service      -> DAO
+            - addAccount()           -> service      -> DAO
+           - deleteAccount()           -> service      -> DAO
+           - updateAccount()           -> service      -> DAO
+        
+    Manger Controller
+            - changePrices()           -> service      -> DAO
+            - getAvailableProducts()           -> service      -> DAO
+            - getStaffDetails()           -> service      -> DAO
+            - addNewStaff()           -> service      -> DAO
+    Admin Controller
+            - addNewManager()           -> service      -> DAO
+            - removeManager()           -> service      -> DAO
+        
+    Staff Controller
+            - addnewProducts()                 -> service      -> DAO
+            - removeProducts()           -> service      -> DAO
+            - submitSaleDetails()           -> service      -> DAO
+  
+
+  your boss come to you and told we need to know what happen on each transction so u need to add log for each dao transaction
+  and he needs extra security("pin/otp") for accessing dao
+
+  u able to write or call a function in each method in Controller (but it's a long process and not professional) even if u add imagine in feature more methods gonna add u need to write every time
+  so that we use Aop write a aspect method only once and call it whenever the function calls it automatically called
+   
+

@@ -1,0 +1,37 @@
+Installation mac
+    jdk (Amazon Corretto)
+    eclipse Enterprise edition
+    tomcat
+
+
+connecting tomcat and eclipse
+    on eclipse
+
+    bottom tab -> Servers
+        select click this link to create a new server
+
+        then select the server type
+            Apache -> tomcat v9 server ->next
+            add tomcat path -> finish
+
+server environment is successfuly established see bottom tab
+
+
+Downloading spring jar files to project
+https://repo.spring.io/release/org/springframework/spring/
+
+download release-dist zip
+extract zip -> lib/ copy all the jar
+
+create new project in eclipse
+    file-> new -> project-> java project
+
+    enter project name -> finish
+
+    create new folder on project root -> lib -> paste the copied jar files
+    then right click on project root -> properies
+    java build path->libraries -> select classpath -> add jar (on right)
+
+    select ur project name and on the lib choose all ur jars
+    apply and close
+    now u can see referenced libraries in your project structure

@@ -1,0 +1,143 @@
+    Problem:
+        When we are in aspect (ex: our loogging aspect)
+            How can we access the mehod parameters?
+    ex:
+    Main app:
+    Account myAccount = new Account;
+    accountDAO.addAccount(myAccount, true);
+
+    aspect
+        How can we get the passed parameter in the aspect
+
+    for hat we use AOP Joint points
+
+
+Development Process
+    1.Access and display method signature
+    2.Access and display method arguments
+
+
+        //display the method signature
+		        MethodSignature mySignature = (MethodSignature) theJoinPoint.getSignature();
+		        System.out.println("Method: " + mySignature);
+
+        //display mthod arguments
+		
+		        // get arguments
+		        Object[] args = theJoinPoint.getArgs();
+
+		        // loop through arguments
+		        for(Object currentArg : args) {
+		        	System.out.println(currentArg);
+		        	if (currentArg instanceof Account) {
+		        		// downcast and print Account specific stuff
+		        		Account theAccount = (Account) currentArg;
+		        		System.out.println("Account holder name: " + theAccount.getName());
+		        		System.out.println("Account holder level: " + theAccount.getLevel());
+		        	}
+		        }
+
+
+Full src
+Main app:
+
+package com.mars.aop;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.mars.aop.dao.AccountDAO;
+import com.mars.aop.dao.MembershipDAO;
+
+public class MainDemoApp {
+
+	public static void main(String[] args) {
+		
+		
+		// read spring  config java class
+		AnnotationConfigApplicationContext context = 
+							new AnnotationConfigApplicationContext(DemoConfig.class);
+		
+		//get the bean from spring container
+		
+		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);		///default bean name is class name if u want to change change it in @Component(name = "helloBean")
+		
+		MembershipDAO theMember = context.getBean("membershipDAO", MembershipDAO.class);			
+		// call the business method
+		Account myAccount = new Account();
+        myAccount.setName("Marees");
+		myAccount.setLevel("Diamond");
+                                                    ///add account triggers the aspect 
+		theAccountDAO.addAccount(myAccount, true);
+		theAccountDAO.doingWork();
+		theMember.addMemberAccount();
+		theMember.goingSleep();
+		
+		//close the context
+		context.close();
+
+	}
+
+}
+
+
+aspect:
+    package com.mars.aop.aspect;
+
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.core.annotation.Order;
+import org.springframework.stereotype.Component;
+
+import com.mars.aop.Account;
+
+@Aspect
+@Component
+@Order(2)
+public class MyDemoLoggingAspect {	
+		
+	@Before("com.mars.aop.aspect.marsAopExpression.daoPackageNoGetterSetter()")
+	public void beforeAddingAnyAdvice(JoinPoint theJoinPoint) {
+		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+		
+		//display the method signature
+		MethodSignature mySignature = (MethodSignature) theJoinPoint.getSignature();
+		System.out.println("Method: " + mySignature);
+		
+		
+		//display mthod arguments
+		
+		// get arguments
+		Object[] args = theJoinPoint.getArgs();
+		
+		// loop through arguments
+		for(Object currentArg : args) {
+			System.out.println(currentArg);
+			if (currentArg instanceof Account) {
+				// downcast and print Account specific stuff
+				Account theAccount = (Account) currentArg;
+				System.out.println("Account holder name: " + theAccount.getName());
+				System.out.println("Account holder level: " + theAccount.getLevel());
+			}
+		}
+		
+	}
+}
+
+
+
+
+create an app with sqlite(no internet connection required)
+    Notes, diary, Money monitor, food monitor, spend tracker
+
+
+    send sqlite db to google drive and get data from that sqlite
+
+
+punchin(start work) punchout(end work)
+
+job assigned location
+
+and calculate punch in to assigned location

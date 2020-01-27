@@ -1,0 +1,8 @@
+Validation Annotations
+
+@NotNull        ->      Checks That the annotated value is not Not null
+@Min            ->      Must be a number >= value
+@Max            ->      Must be a number <= value
+@Size           ->      Size must watch the given Size
+@Pattern        ->      Must Watch a regular expression pattern 
+@Future/@Past   ->      Date must be in Future/past by given Date

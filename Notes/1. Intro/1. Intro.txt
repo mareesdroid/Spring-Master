@@ -1,0 +1,47 @@
+Spring 
+    Spring has an object factory
+    Spring is responsible for creating Objects
+    also responsible for injecting their dependecies
+
+    behind the scenes spring framework will actually perform some operation for u
+    based on information you have in the config file(.xml)
+
+
+Why Spring 
+Simplify Java Enterprise Development
+Lightweight Development with Java POJOs (Plain-Old-Java-Objects)
+Dependency Injection to promote loose coupling
+Declarative programming with Aspect-Oriented-Programmeing(AOP)
+Minimize boilerplate Java code
+
+spring is a framework 
+spring is introduced to simply use the j2ee without EJB
+Java beans are very complex and very poor performance of entity beans
+spring very popular in the industry compare to EJB
+
+what's new in spring 5
+Update minimum requirements for java8 or higher
+upgrade Spring MVC to use new versions of servlet API 4.0
+
+Spring core framework
+
+Spring Core container
+    it manages how beans are created
+    it has a bean factory to creating the beans 
+
+    /* spring core container helps us to create beans and manage them.*/
+
+
+Data Access Layer
+    JDBC Helper class
+        reduce your jdbc code ny 50%
+    ORM Object to relational Mapping
+        Integration with hibernate and JPA
+    JMS Java Message Service 
+        For sneding async messages to a Message Broker
+        Spring provides helper classes for JMS
+    
+Web Layer
+    All web related classes...
+    It's home of the spring mvc framework
+    

@@ -1,0 +1,74 @@
+Bean scopes 
+    Scope refers to the lifecycle of a Bean
+    How long does the bean live?
+    How many instances are created?
+    How is the bean shared
+
+
+Singleton 
+    Spring container creates only one instance of the bean, by default
+    It is cached in memory
+    All requests for the bean
+        will return a shared reference to the Same bean
+
+        ex: 
+        Singleton : 
+            Imageine if u call getBean two times
+            Coach myCoach = context.getBean("myCoach", Coach.class);
+            Coach heyCoach = context.getBean("myCoach", coach.class);
+
+            at myCoach getBean returs a bean wih coach reference
+            and again if u called another variable same bean it will not initialize another bean it reference to the already instanciated bean
+ Spring makes the use of singleton
+    It create only one bean then share for everyone who requests that bean 
+
+
+also u can specify bean scope
+    ex:
+    <bean id = "myFortune" 
+    class = "com.mars.spring.HappyFortuneService"
+    scope = "singleton"
+     />
+
+
+additional spring bean scopes are
+    Singleton       -> Creates a Single Shared instance of the bean.   It is a default selected scope in spring.
+    Prototype       -> Creates a new bean instance for each container request. (not like singleton which creates single instance)
+    request         -> Scoped to an HTTP web request. Only used for web apps.
+    session         -> Scoped to an HTTP web session. Only Used for web apps.
+    global-session  -> Scoped to a global HTTP wedb session. Only Used for web apps.
+
+
+Simpler scope def: 
+
+            Imageine if u call getBean two times
+            Coach myCoach = context.getBean("myCoach", Coach.class);
+            Coach heyCoach = context.getBean("myCoach", coach.class);
+    Singleton :
+             if u use Singleton scope myCoach, heyCoach will same object(same bean) referenes
+    Prototype :
+             if u use Prototype scope myCoach, hecCoach both have independent object(new bean) references
+
+
+
+Bean lifecycle 
+
+    see img file in repo or link
+
+    customInit
+    customDestroy are where we hook some custom code
+
+
+in bean init (init-method)
+    u can call custom business logic
+    setting up handles to resources (db, sockets, file, etc.)
+
+in bean destroy (destroy-method)
+     u can call custom business logic
+     clean up handles to resources (db, sockets, file, etc.)
+
+
+
+Development process
+    1.Define ur method for init and destroy
+    2.configure the method name in spring config file.

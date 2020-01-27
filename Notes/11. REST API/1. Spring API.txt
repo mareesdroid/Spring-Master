@@ -1,0 +1,407 @@
+What u will learn
+    Create REST APIs / Web Services with Spring 
+    Discuss REST concepts, JSON and HTTP messaging 
+    install REST client tool:postman
+    Develop REST APIs / Web Services With @RestController
+    Build a CRUD interface to the database with Spring REST
+
+REST API:
+    REpresentaional State Tansfer
+    Lightweight approach for communicating between applications
+
+What is common data format data transferred over API?
+    Commonly see xml and JSON
+    JSON is most popular and modern
+        JavaScript Object Notation
+
+
+
+Java JSON Data Binding:
+    Data binding is the process of converting JSON data to a Java POJO
+
+ ______________                              __________________
+|    JSON      |        ------------>       |       POJO       |
+|______________|        <-----------        |__________________|
+
+    Data binding is also known as
+        Mapping
+        Serialization/Deserialization
+        Marshalling/Unmarshalling
+        Data binding
+            all are the same thing
+
+
+JSON Data binding with Jackson(dependency)
+    Jackson handles data binding between JSON and Java POJO
+        github source
+            https://github.com/FasterXML/jackson-databind
+
+
+
+Development Process:
+    1. Add Maven Dependency
+    2.Create studen POJO Class
+    3.Create main driver app
+
+
+JsonIgnoreProperties:
+when databindng u have to use all the fields in POJO as same as JSON
+
+if u want to use only some of the fields the use JsonIgnoreProperties annotation
+
+    @JsonIgnoreProperties(ignoreUnknown=true)
+    public class Student {
+        private int id;
+        private String firstName;
+        private String lastName;
+        private boolean active;
+        private Address address;
+        private String[] languages;
+        ...
+        ...
+    }
+
+    usecases:
+        near future api can change new fields can be add so prevent binding exception
+        some fields we don't really use it in our app
+
+
+
+
+Spring REST HTTP:
+
+
+
+
+
+            _____________________________         Http Request msg               _______________________
+           |                            |    ---------------------------->      |                       |
+           |   My Client App(frontend)  |                                       |    My Server(backend) |
+           |____________________________|    <----------------------------      |_______________________|
+                                                 Http Response msg
+
+
+
+Http Request msg
+    Request msg has 3 parts:
+        Request Line            ->  The HTTP Command
+        Header Variable         ->  request metadata
+        Message body            ->  contents of message 
+
+Http Response msg
+    Response msg has 3 parts:
+        Response Line            ->  server protocol and status code (200, 404, 500)
+        Header Variable         ->  Response metadata
+        Message body            ->  contents of message 
+
+
+Http Response Status code:
+    Code Range                  Description
+      100-199                   Informational
+      200-299                   Successful
+      300-399                   Redirection
+      400-499                   Clent error
+      500-599                   Server error
+
+
+MIME Content Types:
+    The message format is described by MIME Content Types
+        Multipurpose Internet Mail-Extension
+    
+    Basic Syntax: type/sub-type
+        ex:
+            text/html, text/plain 
+
+
+
+
+if u are facing @PostConstruct import problem use this dependency:
+
+If you are using spring-boot:
+
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+
+
+For non spring boot add below dependency in pom.xml
+
+<dependency>
+  <groupId>javax.annotation</groupId>
+  <artifactId>javax.annotation-api</artifactId>
+  <version>1.3.2</version>
+</dependency>
+  
+
+
+
+
+
+Spring Exception handling:
+
+    ex:
+    Index out of exception see evernote for detailed screens
+
+     _____________________________                                           _____________________________
+    |                             |      Requesting bad data(456)           |                             |
+    |                             |      ------------------------->         |   Server                    |
+    |                             |                                         |      |      if not found    |
+    |                             |                                         |     \|/                     |
+    |       CLIENT                |                                         |  throw exception            |
+    |                             |                                         |      |                      |
+    |                             |     <----------------------------       |     \|/                     |
+    |                             |     Custom response(not found)          |   Custom exception handler  |
+    |_____________________________|                                         |_____________________________|
+
+
+
+Development Process
+    1. Create a POJO (StudentErrorResponse)
+    2. Create CustomException class extends RuntimeException    (StudenNotFoundException extends RuntimeException)
+    3. generate construcors from superclass
+    4. create a rest controller method
+        which was returns ResponseEntity and has customExeption class param
+
+1. POJO Class:
+package com.mars.rest;
+
+public class StudentErrorResponse {
+
+	
+	private int status;
+	private String message;
+	private long timestamp;
+	
+	
+	public StudentErrorResponse() {
+		
+	}
+
+
+	public StudentErrorResponse(int status, String message, long timestamp) {
+		this.status = status;
+		this.message = message;
+		this.timestamp = timestamp;
+	}
+
+
+	public int getStatus() {
+		return status;
+	}
+
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+
+	public String getMessage() {
+		return message;
+	}
+
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+
+	public long getTimestamp() {
+		return timestamp;
+	}
+
+
+	public void setTimestamp(long timestamp) {
+		this.timestamp = timestamp;
+	}
+	
+	
+	
+}
+
+
+
+
+
+
+ 2. Create CustomException class extends RuntimeException    (StudenNotFoundException extends RuntimeException)
+
+ package com.mars.rest;
+
+public class StudenNotFoundException extends RuntimeException {
+
+	public StudenNotFoundException(String message, Throwable cause) {
+		super(message, cause);
+	}
+
+	public StudenNotFoundException(String message) {
+		super(message);
+	}
+
+	public StudenNotFoundException(Throwable cause) {
+		super(cause);
+	}
+ 
+}
+
+
+
+
+4. create a rest controller method
+        which was returns ResponseEntity and has customExeption class param
+
+
+
+
+
+        	// Add an exception handler using @ExceptionHandler
+	
+	@ExceptionHandler
+	public ResponseEntity<StudentErrorResponse> handleException(StudenNotFoundException e){
+		
+		// create a studenterror response
+		StudentErrorResponse error = new StudentErrorResponse();
+		error.setStatus(HttpStatus.NOT_FOUND.value());
+		error.setMessage(e.getMessage());
+		error.setTimestamp(System.currentTimeMillis());
+		
+		//return response entity
+		
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		
+	}
+
+
+
+flow:
+1. @GetMapping("/students/{studentId}")
+	public Student getStudent(@PathVariable int studentId) {			////@pathvriable studentId and mapping studentId name should match
+		
+		// check the studentId against the list size
+		if( (studentId >= theStudents.size()) || (studentId < 0)) {
+			throw new StudenNotFoundException("Student not found - " + studentId);
+		}
+		
+		return theStudents.get(studentId);
+	}
+
+
+    /*
+    if index out of bound or less than 0 
+    throws new StudentNotFoundException(message);
+    */
+
+
+
+2.
+@ExceptionHandler
+	public ResponseEntity<StudentErrorResponse> handleException(StudenNotFoundException e){
+		
+		// create a studenterror response
+		StudentErrorResponse error = new StudentErrorResponse();
+		error.setStatus(HttpStatus.NOT_FOUND.value());
+		error.setMessage(e.getMessage());
+		error.setTimestamp(System.currentTimeMillis());
+		
+		//return response entity
+		
+		return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+		
+	}
+
+    /*
+    from previous flow thrown exception passed into handleException method
+
+        then u set status , msg for POJO
+        then return the entity
+    */
+
+
+
+
+
+
+Global exception handler:(Best Practice)
+
+    Normal exception handler:
+        Exception handler code is only for the specfic Rest controller
+        Can't be reused by other controllers
+
+
+    We need global exception handlers:
+        Promotes reuse
+        Centralizes exception handling
+
+
+
+We can achieve global exception handling by use of AOP Advice @ControllerAdvice :
+    @ControllerAdvice is similar to an itercepor/filter
+    Pre-process requests to controller
+    Post-process response to handle excepions
+    Perfect for global exception handling
+
+
+
+
+
+            CLIENT                                                               CONTROLLER ADVICE (AOP)                                                  Server
+                                                                                    (Global handler)
+
+
+     _____________________________                                          ______________________________             (Pre-process requests)  _____________________________
+    |                             |      Requesting bad data(456)           |                             |        Requesting bad data(456)   |                             |
+    |                             |      ------------------------->         |     Controller              |   ------------------------->      |                             |
+    |                             |                                         |       Advice                |                                   |                             |
+    |                             |                                         |         |                   |                                   |                             |
+    |       CLIENT                |                                         |        \|/                  |                                   |          Rest               |
+    |                             |                                         |                             |                                   |       Controller            |
+    |                             |     <----------------------------       |     Exception               |                                   |                             |
+    |                             |     Custom response(handled by handlers)|      Handlers               |     <---------------------------- |        thows exception      |
+    |_____________________________|                                         |           |                 |       Post-process response       |_____________________________|
+                                                                            |          \|/                |         (with runtime exception)
+                                                                            |  _____________________      |
+                                                                            | |      Handler 1      |     |
+                                                                            | |                     |     |
+                                                                            | |      Handler 2      |     |
+                                                                            | |                     |     |
+                                                                            | |       .......       |     |
+                                                                            | |       .......       |     |
+                                                                            | |_____________________|     |
+                                                                            |_____________________________|
+
+
+Development Process:
+    1.Create new @ControllerAdvice
+    2.Add Exception handling to @ControllerAdvice
+    3.Refactor other Exception handling(used inside a other rest controller)
+
+
+
+
+
+API best Practice:
+
+Post    :       For creating new entity(cutomer/student)
+GET     :       For viewing(customer/customers)
+PUT     :       For updating existing entity(customer/student)
+DELETE  :       For Deleting existing entity(customer/students)
+
+
+Endpoint example(keep the endpoit same and utilize the request method for create=>post,view=>GET,update=>PUT,delete=>DELETE):
+
+Good practise:
+
+Create new customer         POST            /api/customers
+Read a list of customer     GET             /api/customers
+Read a single customer      GET             /api/customers/{customerId}
+Update an existing customer PUT             /api/customers
+Delete an existing customer DELETE          /api/customers/{customerId}
+
+bad practice:
+
+Create new customer         POST            /api/createCustomer
+Read a list of customer     POST             /api/listCustomers
+Read a single customer      POST             /api/getCustomers
+Update an existing customer POST             /api/updateCustomer
+Delete an existing customer POST          /api/deleteCustomer
+

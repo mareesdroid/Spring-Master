@@ -1,0 +1,113 @@
+What u will learn
+    1.Create maven projects with eclipse
+    2.Add dependencies to Maven pom.xml file
+    3.Build and run maven projects
+    4.Develop maven projects
+        for java and spring apps
+    5.Import Maven projects
+    6.Run maven from the command line 
+
+
+What is Maven?
+    Maven is a Project Management tool for ur project
+    Most popular use of maven is for build management and dependencies
+
+What Problems does Maven Solve?
+    When building ur project u may need additional jar files
+        (hibenate, spring ...)
+    One Approach is to download thae JAR files from each project website
+    Manually add the jar files to your build path/ classpath
+
+Maven will make those JAR files available during compile/run
+
+
+
+How Maven works
+    1.Read config file
+    2.Check Local repo(from computer)
+    3.if some jar file missing from local repo based on config file
+    4.the get from remote repo(from internet)
+    5.finally maven will build and run
+
+
+pom file structure
+
+    Project meta data
+        projectname, version...
+        output filetype: JAR,WAR,...
+
+    dependencies
+        List of projects we depend on spring, hibenate, ....
+
+    plugins
+        Additional custom tasks to run:
+            generate JUnit test reports....
+
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+                                                ///////meta data
+
+  <groupId> com.mars</groupId>
+  <artifactId>maventest</artifactId>
+  <version>1</version>
+  <packaging>jar</packaging>
+
+  <name>maventest</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+                                            ///////dependencies
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+                                                //// plugin here
+</project>
+
+
+
+maven dependency coordinates:(explained)
+    Group ID
+    Artifact ID
+    Version (optional)
+
+These all reffered to as GAV (-gauv-)
+    Group ID, Artifact ID, Version
+
+
+
+Maven Archetypes
+    Archetypes can be used to create new projects
+    contains template for a given Maven project
+    Think of it as a starter project
+        ex: java project, web project
+
+    maven-archetype-quickstart   -> an archetype to generate a sample maven project
+    maven-archetype-webapp      -> An archetype to generate a sample maven webapp project
+
+
+    youcan create archetypes 
+        with commandline or ide
+
+
+Development process
+    verify m2eclipse plugin is installed if not insall it
+    file->new->maven project
+    all default-> next
+    select archetype-> next
+    fill the GAV -> finish
+
+
+
+do u want to sync/update maven with project
+    right click project root->maven->update project

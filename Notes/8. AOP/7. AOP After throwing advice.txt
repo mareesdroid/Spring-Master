@@ -1,0 +1,26 @@
+After Throwing
+
+
+ ______________________           ______________________             ______________________             ______________________             ______________________
+|                      |         |                      |           |                      |           |                      |           |                      |
+|                      |         |                      |           |                      |           |                      |           |   Targetobject       |
+|   Main object        |<------->|     AOP Proxy        |<----------|----Logging-----------|-----------|------Security--------|---------->|       doSomeWork(){  |
+|       dosomeWork();  |         |                      |           |       Aspect         |           |        Aspect        |           |       ......       } |
+|______________________|         |______________________|           |______________________|           |______________________|           |______________________|
+
+
+From aboive fig:
+    After Throwing
+            flow:
+            AOP Methods(logging aspect, security aspect) Called after TargetObject's method throws an error
+            usage:
+            Most Common
+                logging
+                Perform auditing on the exception
+                Notify DevOps team via email or sms
+
+
+Development Process @AfterThrwoing:
+    1.in main app, add a try/catch block for exception handling
+    2.Modify AccountDAO to simulate throwing an exception 
+    3.Add @AfterThrwoing advice

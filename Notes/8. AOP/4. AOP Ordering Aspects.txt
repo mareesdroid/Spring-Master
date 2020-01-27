@@ -1,0 +1,93 @@
+Ordering Apects
+ex:
+
+    @Before("daoPackageNoGetterSetter()")
+	public void beforeAddingAnyAdvice() {
+		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+	}
+	
+	@Before("daoPackageNoGetterSetter()")
+	public void performApiAnalysis() {
+		System.out.println("\n +++AOP+++ \n====>>> Performing API Analysis\n +++++++++ \n");
+	}
+
+    @Before("daoPackageNoGetterSetter()")
+	public void performTestAnalysis() {
+		System.out.println("\n +++AOP+++ \n====>>> Performing Test Analysis\n +++++++++ \n");
+	}
+
+    @Before("daoPackageNoGetterSetter()")
+	public void performUserAnalysis() {
+		System.out.println("\n +++AOP+++ \n====>>> Performing User Analysis\n +++++++++ \n");
+	}
+
+u have four advice functions(like above ex:) 
+    these four advices they all match the same secion of code(pointcut)
+    u have to specify which to run first and so on for that we use ordering aspects
+    Control order on Aspects using the @Order annotation
+    
+
+Development Process
+    1.Refactor: place advices in seperate aspects 
+    2.Add @Order annotation to Aspects
+
+
+ex:
+@Order(1)
+public class MyCloudLogAspect{
+    ...
+    ...
+}
+
+@Order annotation
+    - lowest number has the highest priority/precedence
+    - Range: Integer.MIN_VALUE to Integer.MAX_VALUE
+    - Negative number are allowed
+    - Does not have to be consecutive
+
+
+
+
+We want the following order in our project
+    1. MyCloudLogAspect
+    2. MyLoggingDemoAspect
+    3. MyApiAnalyticsAspect 
+
+
+
+
+Development Process 
+    1.Refactor: place advice in seperate Aspects
+    2.Add @Order annotation to Aspects
+
+
+
+    ///pointcut declaraion
+    @Pointcut("execution(** com.mars.aop.dao.*.*(..))")
+    private void forDAOPackage() {
+
+    }
+
+    // create poincut for getter
+    @Pointcut("execution(** com.mars.aop.dao.*.get*(..))")
+    private void getter() {
+
+    }
+    // create poincut for setter
+    @Pointcut("execution(** com.mars.aop.dao.*.set*(..))")
+    private void setter() {
+
+    }
+
+    // create pintcut: for all dao except getter/setter methods
+    @Pointcut("forDAOPackage() && !(getter() || setter())")
+    private void daoPackageNoGetterSetter() {
+
+    }
+
+
+
+
+
+
+

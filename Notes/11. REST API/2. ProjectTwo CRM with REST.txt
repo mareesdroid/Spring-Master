@@ -1,0 +1,165 @@
+Project structure
+    1.Depndency
+    2.Config
+        - MVC Spring Dispatcher Config (com.mars.config.MySpringMvcDispatcherServletInitializer)
+        - 
+
+
+
+
+
+
+
+2.Config:
+    MVC Spring Dispatcher Config (com.mars.config.MySpringMvcDispatcherServletInitializer):
+
+            we return our config class(AppConfig.java) in getServletConfigClasses()
+            then return our root mapping (" / ") in getServletMappings
+
+    AppConfig (com.mars.config.AppConfig):
+
+            myDataSource() for ComboPooledDataSource setup
+            getHibernateProperties() for settingup hibernate properties
+            
+
+3.sql property (/src/main/resources/persistence-mysql.properties):
+    Contains
+    JDBC connection properties:
+            jdbc driver
+            jdbc url
+            user
+            password
+    
+    Connection Pool Properties:
+            min, max pool size
+            max idle time
+            initial pool size
+    
+    Hibernate properties:
+            hibernate dialect(to generate the appropriate SQL statements for the chosen database)
+            show_sql(for debug)
+            packages to scan (for scning entity/pojo)
+
+4. Entity classes:
+        @Entity
+        @Table(name="customer")             /// as same as db table name
+        public class Customer {
+        
+        	@Id
+        	@GeneratedValue(strategy=GenerationType.IDENTITY)
+        	@Column(name="id")
+        	private int id;
+
+        	@Column(name="first_name")
+        	private String firstName;
+
+        	@Column(name="last_name")
+        	private String lastName;
+
+        	@Column(name="email")
+        	private String email;
+
+            getter ....
+            Setter .....
+        }
+
+5. DAO:
+    interface for CRUD
+
+    public interface CustomerDAO {
+
+	    public List<Customer> getCustomers();
+
+	    public void saveCustomer(Customer theCustomer);
+
+	    public Customer getCustomer(int theId);
+
+	    public void deleteCustomer(int theId);
+    
+    }
+
+6. DAOimpl's:
+
+@Repository
+public class CustomerDAOImpl implements CustomerDAO {
+
+	// need to inject the session factory
+	@Autowired
+	private SessionFactory sessionFactory;
+		.....
+        .....	
+}
+
+
+
+7. Service & Serviceimpl's:
+    Used to delegate the call from service to DAO
+
+SOME TERMS DEFINITIONS
+
+1. com.mars.config.AppConfig :
+
+
+hibernate.dialect :
+    hibernate.dialect property makes Hibernate to generate the appropriate SQL statements for the chosen database. 
+    Dialect is the SQL dialect that your database uses. 
+    Hibernate uses "dialect" configuration to know which database you are using so that it can convert hibernate query to database specific query.
+
+hibernate.show_sql :
+    Hibernate has build-in a function to enable the logging of all the generated SQL statements to the console. 
+    You can enable it by add a “show_sql” property in the Hibernate configuration file “ hibernate.cfg.xml “. 
+    This function is good for basic troubleshooting, and to see what's Hibernate is doing behind.
+
+Connection pool : 
+    connection pool is a cache of database connections maintained so that the connections can be reused when future requests to the database are required. 
+    Connection pools are used to enhance the performance of executing commands on a database
+DataSource object:
+        JDBC DataSource is the preferred approach
+        Better scalability and maintenance than DriverManager
+        Scalability:
+            Suppose you need to create connections yourself, how would you deal with changing load, 
+            sometime you have 10 users sometime you have 1000, you can't just get a connection whenever you need one and later 'release' 
+            it so the Database server does not get out of connections, which leads you to connection pooling. 
+            DriverManager does not provide it, DataSource does.
+
+        comparition with driver manager:
+            DriverManager
+                    hampers the application performance as the connections are created/closed in java classes.
+                    does not support connection pooling.
+            DataSource
+                    improves application performance as connections are not created/closed within a class, they are managed by the application server and can be fetched while at runtime.
+                    it provides a facility creating a pool of connections
+                    helpful for enterprise applications
+Why we need perisistent data?/what is transient data?
+
+    Imagine if u r creating/modifying some objects this state is called transient modified obj is transient data
+    after ur app ends this object going to destroy(garbage) state u will not able to retive it
+    to prevent or we need to store some data and use it for later use we need perisistent
+    we can save data on transient state to persstent data 
+
+     _______________                         _______________                                 _______________
+    |               |                       |               |                               |               |
+    |   new         |  -------------->      |   trasient    |   --------------------->      |    garbage    |
+    |_______________|                       |_______________|                               |_______________|
+                                                    |
+           /|\                                      |                                            /|\
+            |                                     \ | /                                           |
+            |                                      \|/                                            |
+            |                                 _______________             remove()                |
+            |           get()                |               |                                    |
+            |----------------------------->  |  perisistent  |  ----------------------------------|
+                                             |_______________|              
+                                                (db)                      detach()
+
+
+What is SessionFactory in Hibernate?
+   - The SessionFactory is a heavyweight object; 
+        it is usually created during application start up and kept for later use. 
+        The SessionFactory is a thread safe object and used by all the threads of an application.
+   - SessionFactory is an interface. 
+   - SessionFactory can be created by providing Configuration object, which will contain all 
+        DB related property details pulled from either hibernate.cfg.xml file or hibernate.properties file. SessionFactory is a factory for Session objects.
+
+   - We can create one SessionFactory implementation per database in any application. 
+    If your application is referring to multiple databases, then you need to create one SessionFactory per database.
+

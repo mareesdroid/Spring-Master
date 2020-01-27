@@ -1,0 +1,90 @@
+@GetMapping
+@PostMapping
+
+
+
+Get:
+    Requests data from given resource
+        Good for debugging (because u can see every request on url)
+        Bookmark or email url
+        Limitation on data length
+
+Post: 
+    Submits data to given resource
+        Can't Bookmark or email url
+        No Limitation on data length
+        Can also send binary data(file attachment, file upload ..)
+
+
+ex:
+    @RequestMapping(path = "/myPath", method = RequestMethod.GET)
+    public String processForm(...){
+        ...
+        ...
+    }
+
+getMethod annotation shortcut
+   i. @GetMapping("/myPath")
+    public String processForm(...){
+        ...
+        ...
+    }
+
+   ii. @PostMapping
+
+
+
+
+
+service layer
+
+
+purpose of surface layer
+    Service Facade design pattern
+    Intermediate layer for custom business logic
+    Integrate data from multiple sources (DAO/repositories)
+
+
+
+
+
+Architecture of the project for getting customer List
+_________________               _________________               _____________________               _____________________                   _____________________
+|               |     1         |                |       2      |                   |      3        |                    |       4          |                   |
+|               | ---------->   |    customer    |  ----------> |   Customer        |  ---------->  |       Customer     |  ---------->     |       db          |
+|               |               |    Controller  |              |   Service         |               |         DAO        |                  |                   |
+|               |               |________________|   <----------|___________________|  <----------  |____________________|   <----------    |___________________|
+|               |                       |                 7                                    6                                  5
+|               |                       |8
+| browser       |                       |
+|               |                    \  |  /
+|               |                      \|/
+|               |               _____________________
+|               |  <----------  |       JSP         |
+|               |      9        |___________________|
+|_______________|
+
+
+
+
+Work flow(getting customer list)
+Customer Controller
+    asks customer service for customer List
+    then service delegate the call to DAO
+    then dao retrieve it from db
+
+    after controller receives the required data we pass it into the jsp and we show it to a browser(client)
+
+
+Work flow(Adding customer list)
+
+Develop progress
+    add button add to the jsp
+    and when onclick button launch our controller (see jsp file onclick)
+
+Customer Controller
+    asks customer service for customer List
+    then service asks DAO
+    then dao retrieve it from db
+
+    after controller receives the required data we pass it into the jsp and we show it to a browser(client)

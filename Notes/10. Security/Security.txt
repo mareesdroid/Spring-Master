@@ -1,0 +1,442 @@
+You will learn how to...
+    1.Secure spring MVC web apps 
+    2.Develop login pages(default and custom)
+    3.Define users and roles with simple authentication
+    4.Protect URLs based on the roles
+    5.Use jsp tags to hide/show content based on roles
+    6.Store users, passwords and roles in the db(plaintext->encrypted)
+
+
+Spring security model:
+    Spring security defines a framework for security
+    Implemented using servlet filters in the background
+    Two methods of securing a web app: declarative and programmatic
+
+Spring security with servlet filters:
+    Servlet filters are used to pre-process / post-process the web requests
+    Servlet Filters can route web requests based on security logic
+    Spring provides a bulk of security functionality with servlet filters
+
+Security concepts:
+Authentication:
+    Check user id and password with credentials stored in app/db
+
+Authorization:
+    Check to see if user has an authorized role
+
+Development process:
+    1.Add maven dependencies for spring MVC Web App
+    2.Create Spring App configuration(@Configuration)
+    3.Create Spring dispatcher servlet initializer
+    4.Develop our spring controller
+    5.Develop our JSP View page
+
+
+
+1. Maven dependencies
+
+    we are going to use our project without web.xml
+        so for that we need to customize maven build (since we are not using web.xml)
+
+    Previous project and current project xml xonfig
+    Previous:                           Current:
+    web.xml                             spring
+                                        @configuration
+    
+
+    spring-mvc-demo-servlet.xml         Spring Diapather
+                                        Servlet initializer
+
+
+
+Custom maven dependency for no xml:
+    meta data:
+        <groupId>com.mars</groupId>
+	    <artifactId>spring-security-demo</artifactId>
+	    <version>1.0</version>
+	    <packaging>war</packaging>
+        <name>spring-security-demo</name>
+
+
+    plugin:
+        <!-- TO DO: Add support for Maven WAR Plugin -->
+
+	        <build>
+	        <finalName>spring-security-demo</finalName>
+	        <pluginManagement>
+	        	<plugins>
+	        		<!-- Add Maven Coordinates(GAV) for: maven-war-plugin -->
+	        		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-war-plugin</artifactId>
+                        <version>3.2.3</version>
+                    </plugin>
+
+            	</plugins>
+            </pluginManagement>
+            </build>
+
+2.Create Spring App configuration(@Configuration)
+    package com.mars.spring.config;
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.ViewResolver;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+@Configuration
+@EnableWebMvc
+@ComponentScan(basePackages = "com.mars.spring")
+public class DemoAppConfig {
+
+	
+	// define a bean for viewResolver
+	
+	@Bean
+	public ViewResolver viewResolver() {
+		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
+		viewResolver.setPrefix("/WEB-INF/view/");
+		viewResolver.setSuffix(".jsp");
+		return viewResolver;
+	}
+	
+	
+}
+
+
+3.Create Spring dispatcher servlet initializer
+    package com.mars.spring.config;
+
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+public class MySpringMvcDispatcherServletInitializer extends AbstractAnnotationConfigDispatcherServletInitializer{
+
+	@Override
+	protected Class<?>[] getRootConfigClasses() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	protected Class<?>[] getServletConfigClasses() {
+		// TODO Auto-generated method stub
+		return new Class[] {DemoAppConfig.class};
+	}
+
+	@Override
+	protected String[] getServletMappings() {
+		// TODO Auto-generated method stub
+		return new String[] {"/"};
+	}
+
+}
+
+
+
+4.Develop our spring controller
+package com.mars.spring.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class DemoController {
+
+	
+	@GetMapping("/")
+	public String showHome() {
+		return "home";
+	}
+	
+}
+
+
+5.Develop our JSP View page
+    <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    </head>
+    <body>
+        <h1>Home</h1>
+    </body>
+    </html>
+
+
+
+
+
+
+Spring security maven dependencies Add
+    add spring security(as same version as the spring framework)
+        spring security config(as same version as the spring framework)
+
+pom file:
+<properties>
+		<springframework.version>5.0.2.RELEASE</springframework.version>
+		<springsecurity.version>5.0.0.RELEASE</springsecurity.version>
+</properties>
+
+    <!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-web</artifactId>
+    <version>${springsecurity.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-config</artifactId>
+    <version>${springsecurity.version}</version>
+</dependency>
+
+complete pom.xml:
+    <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.mars</groupId>
+	<artifactId>spring-security-demo</artifactId>
+	<version>1.0</version>
+	<packaging>war</packaging>
+
+	<name>spring-security-demo</name>
+
+	<properties>
+		<springframework.version>5.0.2.RELEASE</springframework.version>
+		<springsecurity.version>5.0.0.RELEASE</springsecurity.version>
+
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
+	</properties>
+
+	<dependencies>
+
+		<!-- Spring MVC support -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<version>${springframework.version}</version>
+		</dependency>
+
+		<!-- Servlet, JSP and JSTL support -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>3.1.0</version>
+		</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-web -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-web</artifactId>
+    <version>${springsecurity.version}</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.security/spring-security-config -->
+<dependency>
+    <groupId>org.springframework.security</groupId>
+    <artifactId>spring-security-config</artifactId>
+    <version>${springsecurity.version}</version>
+</dependency>
+
+		<dependency>
+			<groupId>javax.servlet.jsp</groupId>
+			<artifactId>javax.servlet.jsp-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
+		</dependency>
+
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<!-- TO DO: Add support for Maven WAR Plugin -->
+
+	<build>
+	<finalName>spring-security-demo</finalName>
+	<pluginManagement>
+		<plugins>
+			<!-- Add Maven Coordinates(GAV) for: maven-war-plugin -->
+			<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-war-plugin -->
+<plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-war-plugin</artifactId>
+    <version>3.2.3</version>
+</plugin>
+			
+		</plugins>
+	</pluginManagement>
+	</build>
+</project>
+
+
+basic security(spring security project 2) development progress:
+    1.Create spring security initializer
+    2.Create spring security configuration(@Controller)
+    3.Add users, passwords and roles
+
+Spring security Web app initializer:
+    Spring security provides support for security initialization
+    Your security code is used to initialize the servlet cintainer
+    Special class to register the Spring Security Filters
+        - AbstractSecurityWebApplicationInitializer
+            It is a special class to register the Spring Security Filters
+
+
+
+
+Cross Site Request Forgery:(CSRF) (:sea-surf)
+    A Security attack where a malicious website tricks u into executing an action on a web aplication that u r currently logged in
+
+
+CSRF Protection:
+ To protect against CSRF attacks
+ Embed additional authentication data./token into all HTML forms
+ On subsequent requests, web app will verify token before processing
+
+
+Spring security CSRF protetion:
+    CSRF protection is enabled by default in spring security
+    Spring security uses the Synchronizer Token Pattern     
+        Each request includes a session cookie and randomly generated token 
+    For request processing, Spring Security Verifies token before processing
+    All of this is handled by spring Security Filters
+
+        - use <form:form spring tag it automatically adds the CSRF Protection
+            other wise u have to add manaually  
+
+
+CSRF source:(created dynamically)
+
+    <input type="hidden" name="_csrf" value="30e43d50-2205-4080-959a-162ac51c054d" />
+
+
+Spring security roles sample code
+	security config:
+	package com.mars.spring.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.User.UserBuilder;
+
+@Configuration
+@EnableWebSecurity
+public class DemoSecurityConfig extends WebSecurityConfigurerAdapter {
+
+	
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		
+
+		// add our users for in memory authentication 
+		UserBuilder users =  User.withDefaultPasswordEncoder();
+		auth.inMemoryAuthentication()
+			.withUser(users.username("john").password("test123").roles("EMPLOYEE"))
+			.withUser(users.username("mary").password("test123").roles("MANAGER"))
+			.withUser(users.username("susan").password("test123").roles("ADMIN, EMPLOYEE"));
+		
+		
+	}
+	
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+		http.authorizeRequests()
+		.antMatchers("/").hasRole("EMPLOYEE")
+		.antMatchers("/leaders/**").hasRole("MANAGER")
+		.antMatchers("/systems/**").hasRole("ADMIN")
+			.anyRequest().authenticated()
+		.and()
+		.formLogin()
+			.loginPage("/showMyLoginPage")						//show custom form
+			.loginProcessingUrl("/authenticateTheUser")			// login form should POST to this url for processing
+			.permitAll()						// Allow everyone to see login page. No need to be logged in.
+		.and()
+		.logout().permitAll()										// Allow everyone to see login page. No need to be logged in.
+		.and()
+		.exceptionHandling().accessDeniedPage("/access-denied");
+		
+	}
+	
+}
+
+
+using with jsp:
+
+<!-- Display username and role -->
+<p>
+	User: <security:authentication property="principal.username" />
+	<br><br>
+	Role(s): <security:authentication property="principal.authorities" />
+</p>
+
+																		///////if role is only manager below html code will execute
+<security:authorize access="hasRole('MANAGER')">
+<!-- Add a link to point to /leaders .......managers only-->
+<p>
+	<a href="${pageContext.request.contextPath}/leaders">Leadership Meeting</a>
+</p>
+
+</security:authorize>
+<security:authorize access="hasRole('ADMIN')">
+<!-- Add a link to point to /system .......admin only-->
+<p>
+	<a href="${pageContext.request.contextPath}/systems">IT Systems Meeting</a>
+</p>
+</security:authorize>
+
+
+
+
+
+Spring security JDBC:
+Development Process:
+	1.Develop SQL Script to setup database tables
+	2.Add database support to maven Pom file
+	3.Create JDBC Properties file
+	4.Define Datasoure in Spring Configuration
+	5.Update Spring Seurity Configuration to use JDBC
+
+
+spring security encoding algorithm
+	noop(no-op(no operation))			-> plain text passwords
+	bcrypt								-> Bcrypt password hashing
+
+usage
+'{noop}marees'		=>		{encoding algorithm id}urTxtToEnCrypt
+'{bcrypt}marees'
+
+
+Spring security team also recommonding the bcrypt algorithm
+bcrypt: 
+	Performs one-way encrypted hashing 
+	Adds a random salt to the password for additional protection
+	Includes support to defeat brute force attacks
+
+	why u should use bcrypt
+		https://medium.com/@danboterhoven/why-you-should-use-bcrypt-to-hash-passwords-af330100b861
+		https://en.wikipedia.org/wiki/Bcrypt
+		https://crackstation.net/hashing-security.htm
+
+
+		Note 
+		the password from db is never decrypted 
+		because bcrypt is onew-way encryption algorithm

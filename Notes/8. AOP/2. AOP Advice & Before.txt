@@ -1,0 +1,112 @@
+Advice Types:
+     (i)   Before advice:              run before the method
+    (ii)  After finally advice:       run after the method(finally)
+    (iii) After returning advice:     run after the method(success execution)
+    (iv)  After throwing advice:      run after the method(if exception thrown)
+    (v)   Around advice:              run before and after method 
+
+
+ ______________________           ______________________             ______________________             ______________________             ______________________
+|                      |         |                      |           |                      |           |                      |           |                      |
+|                      |         |                      |           |                      |           |                      |           |   Targetobject       |
+|   Main object        |<------->|     AOP Proxy        |<----------|----Logging-----------|-----------|------Security--------|---------->|       doSomeWork(){  |
+|       dosomeWork();  |         |                      |           |       Aspect         |           |        Aspect        |           |       ......       } |
+|______________________|         |______________________|           |______________________|           |______________________|           |______________________|
+
+
+From aboive fig:
+        Before Advice 
+        flow:
+            AOP Methods(logging aspect, security aspect) Called before TargetObject's method call(dosomeWork())
+        usage:
+            Most Common
+                logging, security, transactions
+            Audit logging
+                who, what, when, where
+
+            API Management
+                    - how many times has a method been called user
+                    - analytics: what are peak times?   who is top user?    what is average load?
+
+
+project requirement 
+        Add AspectJ jar files
+            Eventhough we are using spring AOP  ... still need AspectJ jar files
+            because spring AOP uses some AspectJ annotations
+
+
+Development Process @Before:
+    1.Create TargetObject : AccountDAO
+    2.Create spring java config files
+    3.Create main app
+    4.Create an aspect with @Before advice 
+
+
+Prep work
+    add aspectJWeaver jar file to the project
+    properties buld -> library-> classpath add jar add JWeaver jar
+
+1.Create TargetObject : AccountDAO
+
+        package com.mars.aop.dao;
+
+        import org.springframework.stereotype.Component;
+
+        @Component
+        public class AccountDAO {
+        
+        	public void addAccount() {
+        		System.out.println(getClass() + ": DOING MY DB WORK: ADDING AN ACCOUNT");
+        	}
+        }
+
+
+2.Create spring java config files
+
+            package com.mars.aop;
+
+        import org.springframework.context.annotation.ComponentScan;
+        import org.springframework.context.annotation.Configuration;
+        import org.springframework.context.annotation.EnableAspectJAutoProxy;
+
+        @Configuration
+        @EnableAspectJAutoProxy
+        @ComponentScan("com.mars")
+        public class DemoConfig {
+        
+        
+        
+        }
+
+
+ 3.Create main app
+
+         package com.mars.aop;
+        
+        import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+        
+        import com.mars.aop.dao.AccountDAO;
+        
+        public class MainDemoApp {
+        
+        	public static void main(String[] args) {
+            
+            
+        		// read spring  config java class
+        		AnnotationConfigApplicationContext context = 
+        							new AnnotationConfigApplicationContext(DemoConfig.class);
+        
+        		//get the bean from spring container
+        
+        		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);
+        
+        
+        		// call he business method
+        		theAccountDAO.addAccount();
+        
+        		//close the context
+        		context.close();
+        
+        	}
+        
+        }

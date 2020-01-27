@@ -1,0 +1,186 @@
+Model View Controller Design Pattern 
+
+
+Components of a spring MVC Application
+    A Set of webpages to layout ui Components           ---> webpages
+    A collection of Spring beans (Controllers, services, ....)  ------>beans
+    Spring configuration (xml, annotation or java)    ---->spring configuration
+
+
+Controller
+    Contains your business logic
+        Handle the request
+        Strore/ retrieve data(db, web services....)
+        Place data in Model
+
+    Send to appropriate view template
+
+Model
+    Model Contains Your data
+    Store / retrieve data via backend systems
+        database, web service, etc...
+        Use a spring bean if u like
+
+    Place your data in the Model
+        Data can be any Java object/collection
+
+
+View
+    Spring MVC is flexible
+        supports many view templates
+    Most common is JSP + JSTL
+    Developer creates a page 
+        Displays data
+
+
+Development requirement
+    Apache Tomcat
+    Eclipse (Java EE Version)
+    Connected Eclipse toTomcat
+
+
+Spring MVC configuration progress
+
+(i) Add Configuration to file : WEB-INF/web.xml
+        1. Configure spring MVC Dispatcher Servlet
+        2. Setup URL Mappings to Spring MVC Dispatcher servlet
+(ii) Add configuration to file : WEB-INF/spring-mvc-demo-servlet.xml
+        3. Add support for Spring Component Scanning 
+        4. Add support for conversion, formatting and validation
+        5. Configure Spring MVC View Resolver
+
+
+on Eclipse 
+    Window - > perspective -> open perspective select j2ee (or other / j2ee)
+    create new dynamic web project
+
+ after creating project 
+    paste all our spring jar files into
+        WebContent/WEB-INF/lib
+    then paste these jar files
+        javax.servlet.jsp.jstl-1.2.1.jar
+        javax.servlet.jsp.jstl-api-1.2.1.jar 
+
+    then add config files 
+        application-context.xml    (spring bean factory)
+        web.xml       (spring mvc config)
+
+
+
+Creating a Spring Home Controller and View
+    1.Create Controller class
+    2.Define Contriller method
+    3.Add Request Mapping to Controller method
+    4.Retturn View Name
+    5.Develop View page
+
+ 1.Create Controller class
+    Defineing Controller class
+
+    @Controller
+    public class Home Controller{
+
+
+    }
+
+ 2.Define Controller method
+    @Controller
+    public class Home Controller{
+
+        public String showMyPage(){
+            ....
+            ....
+        }
+
+    }
+3.Add Request Mapping
+
+     @Controller
+    public class Home Controller{
+        
+        @RequestMapping("/")
+        public String showMyPage(){
+            ....
+            ....
+        }
+
+    }
+
+4.Return View Name
+ @Controller
+    public class Home Controller{
+        
+        @RequestMapping("/")
+        public String showMyPage(){
+            ....
+            return "main-menu";         ///view name
+        }
+
+    }
+
+5.Developing View Page
+            /*
+            prefix = /web-inf/view/
+            suffix = .jsp
+
+            final Result = prefix + viewName + suffix
+            from above controller return
+            final Result = /web-inf/view/main-menu.jsp
+
+            */
+
+view->new file main menu.jsp
+<html><body>
+<h2>Spring Mvc demo - Home Page</h2>
+<body></html>
+
+
+Reading Html Form Data
+Development Process
+1.Create Controller class
+2.Show HTML Form
+    Create Controller method to show  Html form 
+    create View page for html form
+3.Process Html form
+    Create controller method to process Html form
+    Develop view page for confirmation 
+
+
+
+Spring Model
+The Model is a container for your application data
+
+In your controller
+    you can put anything in the Model
+    Strings, objects, info from database etc..
+Your View Page (JSP) can access data from the Model
+
+
+
+Passing model to your controller
+@RequestMapping("/")
+public String letsShoutDude(HttpServletRequest request, Model model){
+    String theName = request.getPArameter("studentName");
+    theName = theName.toUpperCase();
+    String result = "Yo! " + theName;
+    model.addAttribute("message", result);
+    return "helloworld";
+}
+
+
+
+Controller Level Request Mapping
+
+@RequestMapping("/Categories")
+public class CategoryController(){
+                                                //Mapping
+    @RequestMapping("/Laptops")         //  myshop.com/Categories/Laptops
+    public String showLap(){
+        ...
+    }                                                //Mapping
+
+    @RequestMapping("/Smartphones")     //  myshop.com/Categories/Smartphones
+    public String showPhone(){
+        ...
+    }
+}

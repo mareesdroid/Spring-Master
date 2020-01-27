@@ -1,0 +1,22 @@
+Spring Main Annotaions
+    @Component
+    @Controller
+    @Repository
+    @Service
+
+    
+
+
+    If u face server startup error like
+Several ports (8005, 8080, 8009) required by Tomcat Server at localhost are already in use
+
+see evernote for solution
+    If you are on mac environment, here is what I did.
+
+Find the process id running on this port from terminal, eg, 8080:
+
+lsof -i :8080
+and kill it:
+
+kill -9 <PID>
+

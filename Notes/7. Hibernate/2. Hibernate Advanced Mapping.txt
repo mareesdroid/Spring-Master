@@ -1,0 +1,570 @@
+Basic Mapping:
+
+   Java Class                             Hibernate                            Database Table
+                                    
+                                                                                Student Table
+                                      ____________________              _______________________________________________
+    class Student(){                 |                    |             |id |   firstName   |   lastName    |   email  |
+        int id;                      |                    |             |---|---------------|---------------|----------|
+        String firstName;    --->    |      Hibernate     |  --->       |   |               |               |          |
+        String lastName;     <---    |                    |  <---       |   |               |               |          |
+        String email;                |____________________|             |   |               |               |          |
+    }                                                                   |___|_______________|_______________|__________|
+
+
+Advanced Mapping:
+    In the database, u most likely will have
+        - Multiple tables
+        - Relationships betwwen tables
+    
+    
+    And we need to
+    Need to model this with Hibernate
+
+Advanced Mapping Types:
+    - One-to-One
+    - One-to-Many, Many-to-One
+    - Many-to-Many
+
+One-to-One Mapping:
+
+from one table(Instructor foreign key) to another(Instructor Detail primary key)  by primary (matching) key
+
+    Instructor  ------------>     Instructor Detail
+        Table                       Table
+
+    int id;                         int id;  (from instructor table instructorId)
+    String firstName;               String utubeChannel;
+    String lastName;                String hobby;
+    String email;                   String about;
+    int instructorId;
+
+One-to-Many Mapping:
+
+from one table to many table
+
+one Author release many books
+
+                           |------------------------- > Crime Novel 
+                           |
+    Author table   --------|-------------------------- > Comics
+                           |
+                           |--------------------------- > Horror Stories
+
+
+
+Many-to-many
+
+A Course Can have many Students
+A Student Can have many Courses
+
+    Course1 ------->Student1
+                    Student2
+                    Student8
+
+    Course2 ------->Student1,
+                    Student3,
+                    Student5,
+                    Student8         
+
+    Course3 ------->Student2,
+                    Studen1
+
+                    
+    ....            ......
+
+
+    Primary key and Foreign key
+
+        Primary Key: identify a unique row in a table
+
+        Foreign Key :
+             Link tables together
+             a field in one table that refers to primary key in another table
+
+
+ex :
+
+ Instructor  ------------>     Instructor Detail
+        Table                       Table
+
+    id = 2;                         detailId = 58462;  (from instructor table instructorId)
+    firstName ="Marees";            utubeChannel="mareesdroid";
+    lastName="A";                   hobby="swim";
+    email="m@gmail.com";            about="It's not who u are..... It's whou u r underneath";
+    instructorId=58462;
+
+
+
+    Instructor Table                    Instructor detail
+    id is a primary key                 detailId is a primary key
+    instructorId js a foreign key
+
+
+(a field in one table that refers to primary key in another table)
+
+
+
+Cascade:
+ You can Cascade operations
+    means Apply the same operaton to related entities
+
+
+ex:
+    Imagine two entities (Objects)
+        InstructorDetails       Instructor
+
+        If i were actually save the InstructorDetails then it will also Cascade operation to Instructor
+
+        if i save operation apply on two entities
+        if i delete operation apply on two entities
+
+        that's Cascading
+
+
+        if i delete instructorId from above table
+            it will delete both row instructor and InstructorDetails
+
+
+Configure ur cascade
+    Imagine sometimes u can delete without cascading 
+        ex 
+            a student can enroll to many Course
+            if he leaves remove only a student 
+            not a Course (others may pursue)
+
+Fetch Types
+When we fetch / retrieve data, should we retrieve Everything?
+    Eager will retrieve everything
+    Lazy will retrieve on request
+
+
+
+One to One Development Process(Uni directional)
+    1.Define database table 
+    2.create instructordetail class
+    3.create instructor class
+    4.create main app
+
+
+Entity Lifecycle:
+
+    Detach          ->          if entity is detached, it is not associated with a hibernate session
+    Merge           ->          if instance is detached from session, then merge will reattach to session
+    Persist         ->          Transtions new instances to managed state. Next flush/commit will save in db
+    Remove          ->          Transtions managed entity to be removed. Next flush/commit will deltete from db
+    Refresh         ->          Reload/sync object with data from db
+
+
+ 1.Define database table
+
+ 1.create database
+ 2.2 table(instructor, instructor_detail)
+ 3.configure hibernate xml(before (optional)testif jdbc work with testJDBC.java cchange connection url nd password)
+
+
+  2.create instructordetail class(child table)
+    
+
+    package com.mars.hibernate.demo;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "instructor_detail")
+public class InstructorDetail {
+	// annotate the class as an entity and map to db table
+
+	// define the fields
+
+	// annotate the fields with db column names
+
+	// create constructors
+
+	// generate getter/setter methods
+
+	// generate toString() method
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private int id;
+	@Column(name = "youtube_channel")
+	private String youtubeChannel;
+	@Column(name = "hobby")
+	private String hobby;
+
+	public InstructorDetail() {
+
+	}
+
+	public InstructorDetail(String youtubeChannel, String hobby) {
+		this.youtubeChannel = youtubeChannel;
+		this.hobby = hobby;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getYoutubeChannel() {
+		return youtubeChannel;
+	}
+
+	public void setYoutubeChannel(String youtubeChannel) {
+		this.youtubeChannel = youtubeChannel;
+	}
+
+	public String getHobby() {
+		return hobby;
+	}
+
+	public void setHobby(String hobby) {
+		this.hobby = hobby;
+	}
+
+	@Override
+	public String toString() {
+		return "InstructorDetail [id=" + id + ", youtubeChannel=" + youtubeChannel + ", hobby=" + hobby + "]";
+	}
+
+	}
+
+
+3.create instructor class(main table)
+
+package com.mars.hibernate.demo;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="instructor")
+public class Instructor {
+	
+		// annotate the class as an entity and map to db table
+
+		// define the fields
+
+		// annotate the fields with db column names
+	
+		// ** setup mapping to instructorDetail entity
+
+		// create constructors
+
+		// generate getter/setter methods
+
+		// generate toString() method
+	
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	@Column(name="id")
+	private int id;
+	
+	@Column(name="first_name")
+	private String firstName;
+	
+	@Column(name="last_name")
+	private String lastName;
+	
+	@Column(name="email")
+	private String email;
+	
+	@OneToOne(cascade=CascadeType.ALL)
+	@JoinColumn(name="instructor_detail_id")			//join column by foreign key
+	private InstructorDetail instructorDetail;
+	
+	public Instructor() {
+		
+	}
+
+	public Instructor(String firstName, String lastName, String email) {
+		this.firstName = firstName;
+		this.lastName = lastName;
+		this.email = email;
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public InstructorDetail getInstructorDetail() {
+		return instructorDetail;
+	}
+
+	public void setInstructorDetail(InstructorDetail instructorDetail) {
+		this.instructorDetail = instructorDetail;
+	}
+
+	@Override
+	public String toString() {
+		return "Instructor [id=" + id + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", instructorDetail=" + instructorDetail + "]";
+	}	
+}
+
+ 4.create main app:
+
+package com.mars.hibernate.demo;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
+
+import com.mars.hiibernate.entity.Instructor;
+import com.mars.hiibernate.entity.InstructorDetail;
+
+public class MainApp {
+	public static void main(String[] args) {
+
+		// Create Session Factory
+
+		SessionFactory factory = new Configuration().configure("hibernate.cfg.xml").addAnnotatedClass(Instructor.class)
+				.addAnnotatedClass(InstructorDetail.class).buildSessionFactory();
+
+		// Create Session
+		Session session = factory.getCurrentSession();
+
+		try {
+			// create the objects
+
+			Instructor tempInstructor = new Instructor("theGuru", "Z", "reachMaster@dbz.com");
+
+			InstructorDetail tempInstructorDetail = new InstructorDetail("https://youtube.com/dbz_warrior", "Swimming");
+
+			// associate the objects
+			tempInstructor.setInstructorDetail(tempInstructorDetail);
+			// start a transaction
+			session.beginTransaction();
+			// save the instructor
+			/*
+			 * Note: This will Also save the detail object because of CascadeType.ALL
+			 */
+			System.out.println("Saving Instructor : \n" + tempInstructor);
+
+			session.save(tempInstructor);
+
+			// commit transaction
+			session.getTransaction().commit();
+
+			System.out.println("Done!");
+		} finally {
+			factory.close();
+		}
+	}
+}
+
+
+One to One Development Process(bi directional)
+1.Make updates InstructorDetail class
+    1.Add new field to reference Instructor
+    2.Add getter/setter methods for Instructor
+    3.Add @OneToOne annotation
+2. Create Main app
+
+
+
+
+
+
+
+One to Many Development Process:
+1. Define databse tables
+2. Create Course class
+3. Update Instructor class
+4. Create main app
+
+
+
+
+1.Define database table
+
+ 1.create database
+ 2.3 table (course,instructor,instructor detail)
+ 3.configure hibernate xml(before (optional)testif jdbc work with testJDBC.java cchange connection url nd password)
+
+
+
+
+Fetch Types
+	Eager
+	Lazy
+
+default fetch Types
+	OneToOne			->Eager
+	OneToMany			->Lazy
+	ManyToOne			->Eager
+	ManyToMany			->Lazy
+
+	default fetch type for many is Lazy
+
+Lazy loading 
+	when you lazy load the data is only retrieved on demand
+	however, this requires open hibernate session(need an connection to retrieve data from database)
+
+
+---
+If the hibernate session is closed 
+	in lazy fetch Types
+	it will throw an exception
+
+
+
+EAGER LOADING Output :
+
+Hibernate: select instructor0_.id as id1_1_0_, instructor0_.email as email2_1_0_, instructor0_.first_name as first_na3_1_0_, instructor0_.instructor_detail_id as instruct5_1_0_, instructor0_.last_name as last_nam4_1_0_, courses1_.instructor_id as instruct3_0_1_, courses1_.id as id1_0_1_, courses1_.id as id1_0_2_, courses1_.instructor_id as instruct3_0_2_, courses1_.title as title2_0_2_, instructor2_.id as id1_2_3_, instructor2_.hobby as hobby2_2_3_, instructor2_.youtube_channel as youtube_3_2_3_ from instructor instructor0_ left outer join course courses1_ on instructor0_.id=courses1_.instructor_id left outer join instructor_detail instructor2_ on instructor0_.instructor_detail_id=instructor2_.id where instructor0_.id=?
+
+
+
+
+Current Instructor detail : Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]
+
+
+
+
+Associated instructor was : [Course [id=10, title=Galick Gun, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=11, title=Super Saiyan, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=12, title=Super Saiyan 2, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=13, title=Final Flash, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=14, title=Super Saiyan 4, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]]]
+
+
+Done!
+
+
+
+LAZY LOADING Output : 
+
+Hibernate: select instructor0_.id as id1_1_0_, instructor0_.email as email2_1_0_, instructor0_.first_name as first_na3_1_0_, instructor0_.instructor_detail_id as instruct5_1_0_, instructor0_.last_name as last_nam4_1_0_, instructor1_.id as id1_2_1_, instructor1_.hobby as hobby2_2_1_, instructor1_.youtube_channel as youtube_3_2_1_ from instructor instructor0_ left outer join instructor_detail instructor1_ on instructor0_.instructor_detail_id=instructor1_.id where instructor0_.id=?
+
+
+Current Instructor detail : Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]
+
+
+Hibernate: select courses0_.instructor_id as instruct3_0_0_, courses0_.id as id1_0_0_, courses0_.id as id1_0_1_, courses0_.instructor_id as instruct3_0_1_, courses0_.title as title2_0_1_ from course courses0_ where courses0_.instructor_id=?
+
+
+Associated instructor was : [Course [id=10, title=Galick Gun, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=11, title=Super Saiyan, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=12, title=Super Saiyan 2, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=13, title=Final Flash, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]], Course [id=14, title=Super Saiyan 4, instructor=Instructor [id=1, firstName=vegeteta, lastName=Z, email=reachPrince@dbz.com, instructorDetail=InstructorDetail [id=1, youtubeChannel=https://youtube.com/dbz_vegeta, hobby=Flying]]]]
+
+
+Done!
+
+
+
+OneToMany:
+
+
+				
+				|--------------------------> 	Review 1
+				|
+Course ---------|-------------------------->	Review 2
+				|
+				|-------------------------->	Review 3
+
+
+	If a course is deleted we have to delete the course and all it's reviews
+
+
+
+Development process one to many
+	1.create databse on sql workbench
+	2.Create Review.class
+	3.Update Course.class
+	4.Create Main app
+
+
+Many to Many joining table
+					@JoinTable Overview
+
+	@ManyToMany
+	@JoinTable(
+		name = "course_student",
+		joinColumns = @JoinColumn(name = "course_id"),		//refers to "course_id" column in "course_student" join table
+		inverseJoinColums = @JoinColumn(name = "student_id") //refers to "student_id" column in "course_student" join table
+	)
+	private List<Student> students;
+
+
+	/* more on inverse */
+
+						   Course1 			-------> 			Student1
+					    	       			         			Student2
+	 ____________	    	       			         			Student8				_________________________
+	|We are here|																		|   This side is inverse|
+	 ____________    	    Course2			 ------->			Student1,				|_______________________|
+					    	       			         			Student3,
+					    	       			         			Student5,
+					    	       			         			Student8         
+								
+					    	Course3			 ------->			Student2,
+					    	       			         			Studen1
+								
+								
+					    	....   			         			......
+
+
+The Student class is on the other side
+	So it is considered as the inverse
+
+Inverse refers to the other side of the Relationship
+
+
+
+just remind Inverse refers to the other side of the Relationship
+
+
+
+
+
+Development process ManyToMany
+	1.Define database tables
+	2.Update Course Class
+	3.Update Student Class
+	4.Create Main App
+
+
+
+
+
+

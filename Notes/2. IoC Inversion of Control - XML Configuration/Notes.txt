@@ -1,0 +1,81 @@
+Inversion Of Control (IoC)
+    It's the design process of externalizing, the construction and management of objects.
+
+coding scenarion
+I. you don a project for the sport commity app usage is
+    
+
+     -------------    getDailyWorkOut()         --------------------
+    |    My App   |   -------------->          |  Baseball Coach   |
+     _____________                              _____________________
+
+
+     (i) App -> hey baseball coach give me a daily workout 
+            then the basecball coach gives the practice you need to perform
+
+
+II. Then the commity tells u that app should work for all coach not only baseball like hockey, cricket, gym ....
+
+
+    my code Rough Prototype was
+    MyApp.java(main)
+    BaseballCoach.java
+    Coach.java (interface after refactoring)
+    TrackCoach.java
+
+
+
+Spring beans:
+applicationContext.xml
+jstlike android we add beans instead of views sample context.xml
+
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- Define your beans here -->
+    <bean id="myCoach"
+    	class = "com.mars.spring.TrackCoach">
+    </bean>
+    
+</beans>
+
+
+
+//TODO
+load spring configuration file(xml)
+retrive bean from spring container
+call the methods on the context
+finally close the context
+
+
+
+
+package com.mars.spring;
+
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
+public class HelloSpringApp {
+	
+	public static void main(String[] args) {
+		
+		///load the spring configuration file
+		ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("applicationContext.xml");
+		
+		//retrive bean from spring container
+		Coach theCoach = context.getBean("myCoach", Coach.class);       //getBean(beanID, interface)
+		//call the methods on the bean 
+		System.out.println(theCoach.getDailyWorkout());
+		//close the context
+		context.close();
+		
+	}
+
+}
+
+

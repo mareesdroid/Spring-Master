@@ -1,0 +1,288 @@
+Pointcut example:
+
+*********************************
+Access Modifiers
+return type
+function name.
+*********************************
+
+    @Before("execution(addAccount())")
+    public void beforeAddingAccountAdvice() {
+		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+	}
+
+
+@Before("execution(public void addAccount())")
+
+    - this method runs any method with addAccount and return type must be void
+
+@Before("execution(public String addAccount())")
+- this method runs any method with addAccount and return type must be String
+
+
+@Before("execution(public * addAccount())")
+- this method runs any method with addAccount and any return type
+
+@Before("execution(** addAccount())")
+- this method runs any method with addAccount and any return type and any access modifier
+
+@Before("execution(** add*())")
+- this method runs any method with name of starting add.... and any return type and any access modifier
+
+some package pointcut expressions these all are allowed
+	
+    @Before("execution(public void com.mars.aop.*.AccountDAO.addAccount())")
+
+    @Before("execution(public void com.mars.aop.*.add*())")
+
+
+
+
+*********************************
+    Parameter pattern 
+*********************************
+    () -> Matches methods with no arguments
+    (*) -> Matches methods with one argument of any type
+    (..) -> Matches a method with 0 or more arguments of any type
+
+
+
+*********************************
+    point cut declaration 
+*********************************
+
+imagine u have four methods 
+with same same pointcuts
+    like this
+
+
+            @Before("execution(** com.mars.aop.dao.*.*(..))")
+			public void beforeAddingAnyAdvice() {
+				System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+			}
+
+            @Before("execution(** com.mars.aop.dao.*.*(..))")
+			public void my2ndMehod() {
+				System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+			}
+
+            @Before("execution(** com.mars.aop.dao.*.*(..))")
+			public void my3rdMethod() {
+				System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+			}
+
+            @Before("execution(** com.mars.aop.dao.*.*(..))")
+			public void my4thMethod() {
+				System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+			}
+
+    It will work but we did same code 4 times(Redunency)
+             @Before("execution(** com.mars.aop.dao.*.*(..))")
+
+Ideal Solution:
+    Instead we have a pointcut declaration
+    Apply it to multiple advices
+
+Benefits of pointcut declaration:
+    Easily reuse pointcut expressions
+    update pointcut in one location
+    Can also share and combine pointcut expressions
+
+Development Process
+    Create a pointcut declaration
+    Apply pointcut declaration to advices
+
+
+    @Aspect
+    @Component
+    public class MyDemoLoggingAspect {
+        														///pointcut declaraion
+    	@Pointcut("execution(** com.mars.aop.dao.*.*(..))")
+    	private void forDAOPackage() {
+        
+    	}
+    
+    	@Before("forDAOPackage()")
+    	public void beforeAddingAnyAdvice() {
+    		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+    	}
+    
+    	@Before("forDAOPackage()")
+    	public void performApiAnalysis() {
+    		System.out.println("\n +++AOP+++ \n====>>> Performing API Analysis\n +++++++++ \n");
+    	}
+    }
+
+
+
+
+
+Combining pointcut expression:
+    Imagine if u want to Apply pointcut to certain methods only like example
+        u have to apply advices to all the methods in a class except getter/seter methods
+    we can accompllish this by using combining pointcut expression
+
+
+Combine pointcut expression using logical operators
+    AND(&&)
+    OR(||)
+    NOT(!)
+
+    Combining pointcut expression
+     - Works like an "if" statement
+     - Executes happens only if it evaluates to true
+
+
+ex:
+    @Before("expressionOne() && expressionTwo()")
+    @Before("expressionOne() || expressionTwo()")
+    @Before("expressionOne() && !expressionTwo()")
+
+
+Development Process
+    Create a pointcut declaration
+    combine pointcuts declaration
+    apply combined pointcut to advices
+
+
+Aspect : 
+
+package com.mars.aop.aspect;
+
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
+import org.springframework.stereotype.Component;
+
+@Aspect
+@Component
+public class MyDemoLoggingAspect {
+	
+														///pointcut declaraion
+	@Pointcut("execution(** com.mars.aop.dao.*.*(..))")
+	private void forDAOPackage() {
+		
+	}
+	
+	// create poincut for getter
+	@Pointcut("execution(** com.mars.aop.dao.*.get*(..))")
+	private void getter() {
+		
+	}
+	// create poincut for setter
+	@Pointcut("execution(** com.mars.aop.dao.*.set*(..))")
+	private void setter() {
+		
+	}
+	
+	// create pintcut: for all dao except getter/setter methods
+	@Pointcut("forDAOPackage() && !(getter() || setter())")
+	private void daoPackageNoGetterSetter() {
+		
+	}
+		
+	@Before("daoPackageNoGetterSetter()")
+	public void beforeAddingAnyAdvice() {
+		System.out.println("\n +++AOP+++ \n====>>> Executing @Before advice on addAccount()\n +++++++++ \n");
+	}
+	
+	@Before("daoPackageNoGetterSetter()")
+	public void performApiAnalysis() {
+		System.out.println("\n +++AOP+++ \n====>>> Performing API Analysis\n +++++++++ \n");
+	}
+}
+
+
+DAO:
+package com.mars.aop.dao;
+
+import org.springframework.stereotype.Component;
+
+import com.mars.aop.Account;
+
+@Component
+public class AccountDAO {
+	
+	private String name, serviceCode;
+	
+	public void addAccount(Account theAccount, boolean isVIP) {
+		System.out.println(getClass() + ": DOING MY DB WORK: ADDING AN ACCOUNT");
+	}
+	
+	public void doingWork() {
+		System.out.println(getClass() + " DOING STUFF: Kinda busy! catch u later!");
+	}
+
+	public String getName() {
+		System.out.println(getClass() + ": Getting Name");
+		return name;
+	}
+
+	public void setName(String name) {
+		System.out.println(getClass() + ": Setting Name");
+		this.name = name;
+	}
+
+	public String getServiceCode() {
+		System.out.println(getClass() + ": Getting Servicecode");
+		return serviceCode;
+	}
+
+	public void setServiceCode(String serviceCode) {
+		System.out.println(getClass() + ": Setting Servicecode");
+		this.serviceCode = serviceCode;
+	}
+	
+	
+}
+
+
+MainApp:
+package com.mars.aop;
+
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import com.mars.aop.dao.AccountDAO;
+import com.mars.aop.dao.MembershipDAO;
+
+public class MainDemoApp {
+
+	public static void main(String[] args) {
+		
+		
+		// read spring  config java class
+		AnnotationConfigApplicationContext context = 
+							new AnnotationConfigApplicationContext(DemoConfig.class);
+		
+		//get the bean from spring container
+		
+		AccountDAO theAccountDAO = context.getBean("accountDAO", AccountDAO.class);		///default bean name is class name if u want to change change it in @Component(name = "helloBean")
+		
+		MembershipDAO theMember = context.getBean("membershipDAO", MembershipDAO.class);			
+		// call the business method
+		Account myAccount = new Account();
+		theAccountDAO.addAccount(myAccount, true);
+		theAccountDAO.doingWork();
+		
+		theMember.addMemberAccount();
+		theMember.goingSleep();
+		
+		
+		//call the accountdao getter/setter methods
+		
+		theAccountDAO.setName("hi");
+		theAccountDAO.setServiceCode("hi code");
+		
+		String name = theAccountDAO.getName();
+		String serviceCode = theAccountDAO.getServiceCode();
+		
+		
+		
+		//close the context
+		context.close();
+
+	}
+
+}
+
+    
